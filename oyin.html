@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧠 So'z Topish O'yini</title>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .game-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .user-info {
+      position: absolute;
+      top: -10px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    h1 {
+      color: #fff;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      font-size: 2.5rem;
+      margin: 60px 0 30px 0;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    #timer {
+      font-size: 1.5rem;
+      color: #fff;
+      margin: 20px 0;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #wordBox {
+      font-size: 2.5rem;
+      margin: 30px 0;
+      font-weight: bold;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px 20px;
+      letter-spacing: 3px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #wordBox:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    #inputWord {
+      font-size: 1.3rem;
+      padding: 18px 25px;
+      width: 100%;
+      max-width: 400px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      color: #2d3748;
+      outline: none;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    #inputWord:focus {
+      border-color: rgba(255, 95, 109, 0.8);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    #inputWord::placeholder {
+      color: #a0aec0;
+      font-weight: 500;
+    }
+
+    #score {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
+      background: rgba(67, 233, 123, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 12px 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(67, 233, 123, 0.3);
+      display: inline-block;
+    }
+
+    .game-over {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      color: #2d3748;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .game-over h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+
+    .final-score {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #43e97b;
+      margin: 15px 0;
+    }
+
+    #leaderboard {
+      margin-top: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #leaderboard h3 {
+      color: #667eea;
+      text-shadow: none;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      color: #2d3748;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .leaderboard-item:hover {
+      transform: translateX(5px);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .leaderboard-item:first-child {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #2d3748;
+      font-weight: 800;
+    }
+
+    .leaderboard-item:nth-child(2) {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e2e8f0 100%);
+    }
+
+    .leaderboard-item:nth-child(3) {
+      background: linear-gradient(135deg, #cd7f32 0%, #d69e2e 100%);
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(102, 126, 234, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      color: white;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px 10px;
+      }
+
+      .user-info {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-bottom: 20px;
+        font-size: 0.8rem;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin: 20px 0;
+      }
+
+      #wordBox {
+        font-size: 1.8rem;
+        padding: 20px 15px;
+        margin: 20px 0;
+        letter-spacing: 2px;
+      }
+
+      #inputWord {
+        font-size: 1.1rem;
+        padding: 15px 20px;
+        max-width: 100%;
+      }
+
+      #timer {
+        font-size: 1.2rem;
+        padding: 12px 20px;
+      }
+
+      #score {
+        font-size: 1.1rem;
+        padding: 10px 20px;
+      }
+
+      #leaderboard {
+        margin-top: 25px;
+        padding: 20px 15px;
+      }
+
+      .leaderboard-item {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .player-avatar {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p style="font-weight: 600; font-size: 1.1rem;">O'yin yuklanmoqda...</p>
+  </div>
+
+  <div class="game-container" id="gameContainer" style="display: none;">
+    <div class="user-info" id="userInfo">
+      <img id="userAvatar" class="user-avatar" src="/placeholder.svg" alt="User">
+      <span id="userName"></span>
+    </div>
+
+    <h1>🧠 So'z Topish O'yini</h1>
+    <div id="timer">⏳ O'yin boshlanmoqda...</div>
+    <div id="wordBox">...</div>
+    <input type="text" id="inputWord" placeholder="So'zni yozing va Enter bosing" autocomplete="off" />
+    <div id="score">Ball: 0</div>
+
+    <div id="gameOverScreen" style="display: none;" class="game-over">
+      <h2>🎉 O'yin tugadi!</h2>
+      <div class="final-score" id="finalScore">0</div>
+      <p>Sizning natijangiz saqlandi!</p>
+      <p style="margin-top: 15px; color: #666;">3 soniyadan keyin bosh sahifaga qaytasiz...</p>
+    </div>
+
+    <div id="leaderboard">
+      <h3>🏆 Eng Yaxshi Natijalar</h3>
+      <div id="scores">Yuklanmoqda...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
+      authDomain: "elbekproductions.firebaseapp.com",
+      databaseURL: "https://elbekproductions-default-rtdb.firebaseio.com",
+      projectId: "elbekproductions",
+      storageBucket: "elbekproductions.firebasestorage.app",
+      messagingSenderId: "467619718063",
+      appId: "1:467619718063:web:f370881cffbb396899c55a",
+      measurementId: "G-Y46P6R2H8V"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
+    let time = parseInt(localStorage.getItem("sozTime") || "10");
+    const wordList = [
+      "olma", "kitob", "telefon", "maktab", "uy", "daraxt", "qush", "oy", "quyosh", "bolajon",
+      "suv", "non", "oila", "do'st", "sevgi", "baxt", "umid", "hayot", "vatan", "ona",
+      "ota", "bola", "qiz", "o'g'il", "aka", "opa", "sinf", "ustoz", "dars", "savol",
+      "javob", "kitob", "qalam", "daftar", "stol", "stul", "deraza", "eshik", "pol", "shift"
+    ];
+
+    let currentWord = "";
+    let score = 0;
+    let gameActive = false;
+
+    const wordBox = document.getElementById("wordBox");
+    const input = document.getElementById("inputWord");
+    const timer = document.getElementById("timer");
+    const scoreBox = document.getElementById("score");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const finalScore = document.getElementById("finalScore");
+
+    // Authentication check
+    onAuthStateChanged(auth, (user) => {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const gameContainer = document.getElementById('gameContainer');
+
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        
+        // Update user info
+        document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
+        document.getElementById('userAvatar').src = user.photoURL || '/placeholder.svg?height=28&width=28';
+        
+        // Show game
+        loadingOverlay.style.display = 'none';
+        gameContainer.style.display = 'block';
+        
+        // Start game
+        initGame();
+      }
+    });
+
+    function newWord() {
+      currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      wordBox.textContent = currentWord;
+      input.value = "";
+    }
+
+    function updateScoreboard() {
+      const scoresDiv = document.getElementById("scores");
+      const usersRef = ref(db, "users");
+      
+      onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        scoresDiv.innerHTML = "";
+        
+        if (data) {
+          const sorted = Object.values(data).sort((a, b) => b.score - a.score).slice(0, 10);
+          sorted.forEach((u, i) => {
+            const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+            scoresDiv.innerHTML += `
+              <div class="leaderboard-item">
+                <div class="player-info">
+                  <img class="player-avatar" src="${u.photoURL || '/placeholder.svg?height=32&width=32'}" alt="${u.name}">
+                  <span>${medal} ${u.name}</span>
+                </div>
+                <strong>${u.score} ball</strong>
+              </div>`;
+          });
+        } else {
+          scoresDiv.innerHTML = '<p style="color: #666;">Hali natijalar yo\'q</p>';
+        }
+      });
+    }
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && gameActive) {
+        if (input.value.trim().toLowerCase() === currentWord.toLowerCase()) {
+          score++;
+          scoreBox.textContent = "Ball: " + score;
+          newWord();
+          
+          // Add visual feedback
+          wordBox.style.background = "rgba(67, 233, 123, 0.3)";
+          setTimeout(() => {
+            wordBox.style.background = "rgba(255, 255, 255, 0.15)";
+          }, 200);
+        } else {
+          input.value = "";
+          // Add error feedback
+          input.style.borderColor = "rgba(255, 95, 109, 0.8)";
+          setTimeout(() => {
+            input.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          }, 300);
+        }
+      }
+    });
+
+    function endGame() {
+      gameActive = false;
+      timer.textContent = "✅ O'yin tugadi!";
+      input.disabled = true;
+      input.style.opacity = "0.5";
+      
+      finalScore.textContent = `${score} ball`;
+      gameOverScreen.style.display = "block";
+
+      // Save score to Firebase
+      const userRef = ref(db, "users/" + currentUser.uid);
+      
+      runTransaction(userRef, (currentData) => {
+        if (currentData === null || !currentData.score || score > currentData.score) {
+          return {
+            name: currentUser.displayName || 'Foydalanuvchi',
+            email: currentUser.email,
+            photoURL: currentUser.photoURL || '',
+            score: score,
+            lastPlayed: Date.now()
+          };
+        }
+        return currentData;
+      });
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3000);
+    }
+
+    function initGame() {
+      newWord();
+      input.focus();
+      gameActive = true;
+      
+      timer.textContent = `⏳ ${time} soniya qoldi`;
+      
+      const interval = setInterval(() => {
+        time--;
+        timer.textContent = `⏳ ${time} soniya qoldi`;
+        
+        if (time <= 0) {
+          clearInterval(interval);
+          endGame();
+        }
+      }, 1000);
+
+      updateScoreboard();
+    }
+  </script>
+</body>
+</html>
