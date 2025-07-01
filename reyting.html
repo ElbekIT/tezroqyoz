@@ -26,14 +26,63 @@
     body {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 15px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .guest-info {
+      background: rgba(255, 193, 7, 0.2);
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 40px 20px;
       position: relative;
     }
 
-    body::before {
+    .main-content::before {
       content: '';
       position: absolute;
       top: 0;
@@ -52,34 +101,12 @@
       max-width: 600px;
     }
 
-    .user-info {
-      position: absolute;
-      top: -20px;
-      right: 0;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .user-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.5);
-    }
-
     h1 {
       font-size: 3rem;
       font-weight: 800;
       color: #fff;
       letter-spacing: 2px;
-      margin: 60px 0 40px 0;
+      margin-bottom: 40px;
       text-align: center;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
@@ -243,37 +270,6 @@
       background: rgba(255, 255, 255, 0.25);
     }
 
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(102, 126, 234, 0.9);
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      color: white;
-    }
-
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid #fff;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -288,7 +284,13 @@
     }
 
     @media (max-width: 600px) {
-      body {
+      .header {
+        padding: 12px 20px;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .main-content {
         padding: 20px 10px;
       }
 
@@ -296,17 +298,9 @@
         max-width: 100%;
       }
 
-      .user-info {
-        position: relative;
-        top: 0;
-        right: 0;
-        margin-bottom: 20px;
-        font-size: 0.8rem;
-      }
-
       h1 {
         font-size: 2rem;
-        margin: 20px 0 30px 0;
+        margin-bottom: 30px;
       }
 
       .leaderboard-container {
@@ -351,27 +345,28 @@
   </style>
 </head>
 <body>
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <p style="font-weight: 600; font-size: 1.1rem;">Reyting yuklanmoqda...</p>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">🏆 Reyting</div>
+    <div id="headerUserInfo">
+      <!-- User info will be inserted here -->
+    </div>
   </div>
 
-  <div class="container" id="mainContent" style="display: none;">
-    <div class="user-info" id="userInfo">
-      <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=28&width=28" alt="User">
-      <span id="userName"></span>
-    </div>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <h1>So'z Topish Chempionlari</h1>
 
-    <h1>🏆 Reyting</h1>
+      <div class="leaderboard-container">
+        <div class="leaderboard-header">
+          <div class="leaderboard-title">Eng Yuqori Natijalar</div>
+          <div class="leaderboard-subtitle">Barcha vaqtlar davomida</div>
+        </div>
 
-    <div class="leaderboard-container">
-      <div class="leaderboard-header">
-        <div class="leaderboard-title">So'z Topish Chempionlari</div>
-        <div class="leaderboard-subtitle">Eng yuqori natijalar</div>
-      </div>
-
-      <div class="leaderboard-list" id="leaderboardList">
-        <!-- Leaderboard items will be added here -->
+        <div class="leaderboard-list" id="leaderboardList">
+          <p style="text-align: center; color: #718096;">Yuklanmoqda...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -403,35 +398,33 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    let authChecked = false;
+    let currentUser = null;
 
     // Authentication check
     onAuthStateChanged(auth, (user) => {
-      authChecked = true;
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const mainContent = document.getElementById('mainContent');
-
-      console.log("Reyting auth state:", user ? user.displayName : "No user");
-
-      if (!user) {
-        console.log("No user in reyting, redirecting to login");
-        window.location.href = "login.html";
-        return;
-      }
-
-      // Update user info
-      document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
-      if (user.photoURL) {
-        document.getElementById('userAvatar').src = user.photoURL;
-      }
-      
-      // Show content
-      loadingOverlay.style.display = 'none';
-      mainContent.style.display = 'block';
-      
-      // Load leaderboard
+      currentUser = user;
+      updateHeaderUserInfo();
       loadLeaderboard();
     });
+
+    function updateHeaderUserInfo() {
+      const headerUserInfo = document.getElementById('headerUserInfo');
+      
+      if (currentUser) {
+        headerUserInfo.innerHTML = `
+          <div class="user-info">
+            <img class="user-avatar" src="${currentUser.photoURL || '/placeholder.svg?height=28&width=28'}" alt="User">
+            <span>${currentUser.displayName || 'Foydalanuvchi'}</span>
+          </div>
+        `;
+      } else {
+        headerUserInfo.innerHTML = `
+          <div class="guest-info">
+            👤 Mehmon
+          </div>
+        `;
+      }
+    }
 
     function loadLeaderboard() {
       const leaderboardList = document.getElementById('leaderboardList');
@@ -479,14 +472,6 @@
         }
       });
     }
-
-    // Timeout for auth check
-    setTimeout(() => {
-      if (!authChecked) {
-        console.log("Reyting auth timeout, redirecting to login");
-        window.location.href = "login.html";
-      }
-    }, 5000);
   </script>
 </body>
 </html>
