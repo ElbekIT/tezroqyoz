@@ -689,11 +689,13 @@
   <!-- Firebase Script -->
   <script type="module">
     try {
-      // Firebase imports
+      // Firebase SDK larni import qilish (CDN orqali)
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-      const { getDatabase, ref, runTransaction, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+      const { getAnalytics } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js");
+      const { getDatabase, ref, onValue, runTransaction } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
+      const { getAuth, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
 
+      // Firebase konfiguratsiyasi (sizniki)
       const firebaseConfig = {
         apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
         authDomain: "elbekproductions.firebaseapp.com",
@@ -705,211 +707,37 @@
         measurementId: "G-Y46P6R2H8V"
       };
 
+      // Firebase ilovasini ishga tushurish
       const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
+      const analytics = getAnalytics(app);
       const db = getDatabase(app);
+      const auth = getAuth(app);
 
-      // HTTPS redirect for production
-      if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-        location.replace(`https:${location.href.substring(location.protocol.length)}`);
-      }
+      console.log("🚀 Firebase yuklandi");
 
-      // Set auth persistence
-      await setPersistence(auth, browserLocalPersistence);
+      // Misol: Global ovozlarni o'qish
+      const likeRef = ref(db, "globalVotes/like");
+      const dislikeRef = ref(db, "globalVotes/dislike");
 
-      let currentUser = null;
-
-      // DOM Elements
-      const loadingState = document.getElementById('loadingState');
-      const errorState = document.getElementById('errorState');
-      const mainContent = document.getElementById('mainContent');
-      const loginBtn = document.getElementById('loginBtn');
-      const userInfo = document.getElementById('userInfo');
-      const guestNotice = document.getElementById('guestNotice');
-      const userName = document.getElementById('userName');
-      const userEmail = document.getElementById('userEmail');
-      const userAvatar = document.getElementById('userAvatar');
-
-      // Show main content after loading
-      function showMainContent() {
-        loadingState.classList.add('hidden');
-        errorState.classList.add('hidden');
-        mainContent.classList.remove('hidden');
-      }
-
-      // Show error state
-      function showError() {
-        loadingState.classList.add('hidden');
-        mainContent.classList.add('hidden');
-        errorState.classList.remove('hidden');
-      }
-
-      // Authentication State
-      onAuthStateChanged(auth, (user) => {
-        console.log("🔄 Auth state changed:", user ? user.email : "No user");
-        currentUser = user;
-        
-        // Save auth state to localStorage for persistence
-        if (user) {
-          localStorage.setItem('userLoggedIn', 'true');
-          localStorage.setItem('userData', JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          }));
-        } else {
-          localStorage.removeItem('userLoggedIn');
-          localStorage.removeItem('userData');
-        }
-        
-        updateUI();
-        initializeVoting();
-        showMainContent();
+      onValue(likeRef, (snap) => {
+        console.log("👍 Like:", snap.val() || 0);
       });
 
-      function updateUI() {
-        if (currentUser) {
-          // User is logged in
-          console.log("✅ User logged in:", currentUser.email);
-          loginBtn.classList.add('hidden');
-          userInfo.classList.remove('hidden');
-          guestNotice.classList.add('hidden');
-          
-          userName.textContent = currentUser.displayName || 'Foydalanuvchi';
-          userEmail.textContent = currentUser.email || '';
-          
-          // Handle user avatar
-          if (currentUser.photoURL) {
-            userAvatar.innerHTML = `<img src="${currentUser.photoURL}" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">`;
-          } else {
-            userAvatar.innerHTML = '👤';
-          }
+      onValue(dislikeRef, (snap) => {
+        console.log("👎 Dislike:", snap.val() || 0);
+      });
+
+      // Misol: Auth foydalanuvchini kuzatish
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          console.log("👤 Foydalanuvchi:", user.email);
         } else {
-          // User is guest
-          console.log("👤 User is guest");
-          loginBtn.classList.remove('hidden');
-          userInfo.classList.add('hidden');
-          guestNotice.classList.remove('hidden');
+          console.log("🚫 Tizimga kirilmagan foydalanuvchi");
         }
-      }
-
-      // Logout Handler
-      window.handleLogout = async function() {
-        if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
-          try {
-            await signOut(auth);
-            console.log('✅ User signed out successfully');
-            // Clear localStorage
-            localStorage.removeItem('userLoggedIn');
-            localStorage.removeItem('userData');
-          } catch (error) {
-            console.error('❌ Sign out error:', error);
-            alert('Chiqishda xatolik yuz berdi.');
-          }
-        }
-      };
-
-      // Start Game
-      window.startGame = function() {
-        const selectedTime = document.getElementById("duration").value;
-        localStorage.setItem("sozTime", selectedTime);
-        
-        // Set user status for game page
-        if (currentUser) {
-          localStorage.setItem("isGuest", "false");
-          localStorage.setItem("currentUser", JSON.stringify({
-            uid: currentUser.uid,
-            email: currentUser.email,
-            displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL
-          }));
-        } else {
-          localStorage.setItem("isGuest", "true");
-          localStorage.removeItem("currentUser");
-        }
-        
-        console.log("🎮 Starting game with user:", currentUser ? currentUser.email : "guest");
-        window.location.href = "oyin.html";
-      };
-
-      // Voting System
-      function initializeVoting() {
-        try {
-          const likeRef = ref(db, "globalVotes/like");
-          const dislikeRef = ref(db, "globalVotes/dislike");
-
-          let likeCount = 0;
-          let dislikeCount = 0;
-
-          onValue(likeRef, (snap) => {
-            likeCount = snap.val() || 0;
-            updateVoteUI(likeCount, dislikeCount);
-          });
-          
-          onValue(dislikeRef, (snap) => {
-            dislikeCount = snap.val() || 0;
-            updateVoteUI(likeCount, dislikeCount);
-          });
-        } catch (error) {
-          console.error("❌ Voting system error:", error);
-        }
-      }
-
-      function updateVoteUI(likes, dislikes) {
-        try {
-          const total = likes + dislikes || 1;
-          const likePercent = ((likes / total) * 100).toFixed(1);
-          const dislikePercent = ((dislikes / total) * 100).toFixed(1);
-
-          const likeCountEl = document.getElementById("likeCount");
-          const dislikeCountEl = document.getElementById("dislikeCount");
-          const likeFillEl = document.getElementById("likeFill");
-          const dislikeFillEl = document.getElementById("dislikeFill");
-          const likePercentEl = document.getElementById("likePercent");
-          const dislikePercentEl = document.getElementById("dislikePercent");
-
-          if (likeCountEl) likeCountEl.textContent = `👍 ${likes}`;
-          if (dislikeCountEl) dislikeCountEl.textContent = `👎 ${dislikes}`;
-          if (likeFillEl) likeFillEl.style.width = likePercent + "%";
-          if (dislikeFillEl) dislikeFillEl.style.width = dislikePercent + "%";
-          if (likePercentEl) likePercentEl.textContent = likePercent + "%";
-          if (dislikePercentEl) dislikePercentEl.textContent = dislikePercent + "%";
-        } catch (error) {
-          console.error("❌ Vote UI update error:", error);
-        }
-      }
-
-      // Vote Handler
-      window.handleVote = function(type) {
-        try {
-          const voteRef = ref(db, `globalVotes/${type}`);
-          runTransaction(voteRef, (current) => (current || 0) + 1)
-            .then(() => {
-              console.log(`✅ Vote recorded: ${type}`);
-              // Add visual feedback
-              const btn = document.querySelector(`.vote-btn.${type}`);
-              if (btn) {
-                btn.style.transform = 'scale(1.2) rotate(10deg)';
-                setTimeout(() => {
-                  btn.style.transform = '';
-                }, 200);
-              }
-            })
-            .catch((error) => {
-              console.error("❌ Vote error:", error);
-            });
-        } catch (error) {
-          console.error("❌ Vote handler error:", error);
-        }
-      };
-
-      console.log("🚀 Index page loaded successfully");
+      });
 
     } catch (error) {
-      console.error("❌ Firebase initialization error:", error);
-      document.getElementById('loadingState').classList.add('hidden');
-      document.getElementById('errorState').classList.remove('hidden');
+      console.error("❌ Firebase yuklashda xato:", error);
     }
   </script>
 </body>
