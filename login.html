@@ -560,11 +560,22 @@
     try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
+      
+      // Development uchun emulator ishlatish (agar kerak bo'lsa)
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        console.log("🔧 Development mode detected");
+      }
+      
       provider = new GoogleAuthProvider();
       
+      // Provider sozlamalari
       provider.addScope('profile');
       provider.addScope('email');
-      
+      provider.setCustomParameters({
+        'login_hint': 'user@example.com',
+        'prompt': 'select_account'
+      });
+
       console.log("✅ Firebase initialized successfully");
     } catch (error) {
       console.error("❌ Firebase initialization error:", error);
@@ -614,7 +625,7 @@
       }, 2000);
     }
 
-    // Google Sign In
+    // Google Sign In handler
     window.handleGoogleSignIn = async function() {
       if (!auth || !provider) {
         showError("Autentifikatsiya xizmati mavjud emas. Sahifani yangilang.");
@@ -627,6 +638,7 @@
 
         console.log("🔄 Starting Google sign in...");
         
+        // Popup o'rniga redirect ishlatish (ba'zi hollarda yaxshiroq ishlaydi)
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
@@ -646,6 +658,9 @@
         let errorMsg = "Kirish jarayonida xatolik yuz berdi.";
         
         switch (error.code) {
+          case 'auth/unauthorized-domain':
+            errorMsg = "Bu domen Firebase da ro'yxatga olinmagan. Administrator bilan bog'laning.";
+            break;
           case 'auth/popup-closed-by-user':
             errorMsg = "Kirish oynasi yopildi. Qaytadan urinib ko'ring.";
             break;

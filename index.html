@@ -355,59 +355,6 @@
       flex-shrink: 0;
     }
 
-    /* Stats Section */
-    .stats-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
-      padding: 40px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      margin-bottom: 60px;
-      max-width: 800px;
-      width: 100%;
-    }
-
-    .stats-title {
-      color: var(--text-primary);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-      padding: 24px;
-      border-radius: 16px;
-      text-align: center;
-      border: 1px solid #e2e8f0;
-    }
-
-    .stat-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    .stat-number {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
     /* Vote Section */
     .vote-section {
       background: rgba(255, 255, 255, 0.95);
@@ -518,6 +465,14 @@
       display: none !important;
     }
 
+    /* Loading State */
+    .loading-state {
+      text-align: center;
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1rem;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .header-content {
@@ -556,7 +511,7 @@
         font-size: 1rem;
       }
 
-      .game-controls, .stats-section, .vote-section {
+      .game-controls, .vote-section {
         padding: 24px;
       }
 
@@ -577,10 +532,6 @@
         height: 60px;
         font-size: 2rem;
       }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 480px) {
@@ -595,149 +546,130 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <a href="#" class="logo">
-        <span class="logo-icon">🧠</span>
-        <span>So'z Topish O'yini</span>
-      </a>
-      
-      <div class="auth-section">
-        <!-- Login Button (for guests) -->
-        <a href="login.html" class="login-btn" id="loginBtn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M15 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 17L15 12L10 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Kirish
+  <!-- Loading State -->
+  <div class="loading-state" id="loadingState">
+    🔄 Yuklanmoqda...
+  </div>
+
+  <!-- Main Content (hidden initially) -->
+  <div id="mainContent" class="hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <span class="logo-icon">🧠</span>
+          <span>So'z Topish O'yini</span>
         </a>
+        
+        <div class="auth-section">
+          <!-- Login Button (for guests) -->
+          <a href="login.html" class="login-btn" id="loginBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M15 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 17L15 12L10 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Kirish
+          </a>
 
-        <!-- User Info (for logged in users) -->
-        <div class="user-info hidden" id="userInfo">
-          <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=40&width=40" alt="User">
-          <div class="user-details">
-            <h4 id="userName">Foydalanuvchi</h4>
-            <p id="userEmail">user@example.com</p>
+          <!-- User Info (for logged in users) -->
+          <div class="user-info hidden" id="userInfo">
+            <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=40&width=40" alt="User">
+            <div class="user-details">
+              <h4 id="userName">Foydalanuvchi</h4>
+              <p id="userEmail">user@example.com</p>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">Chiqish</button>
           </div>
-          <button class="logout-btn" onclick="handleLogout()">Chiqish</button>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <h1 class="hero-title">So'z Topish O'yini</h1>
-      <p class="hero-subtitle">O'zbekcha so'zlarni toping va reytingda birinchi bo'ling!</p>
-      <p class="hero-description">
-        Bu o'yin orqali siz tanlagan vaqt ichida qancha o'zbekcha so'z topa olishingizni sinab ko'rishingiz mumkin. 
-        Eng yaxshi natijangizni qayd eting va global reytingda o'z o'rningizni egallang!
-      </p>
-    </section>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <h1 class="hero-title">So'z Topish O'yini</h1>
+        <p class="hero-subtitle">O'zbekcha so'zlarni toping va reytingda birinchi bo'ling!</p>
+        <p class="hero-description">
+          Bu o'yin orqali siz tanlagan vaqt ichida qancha o'zbekcha so'z topa olishingizni sinab ko'rishingiz mumkin. 
+          Eng yaxshi natijangizni qayd eting va global reytingda o'z o'rningizni egallang!
+        </p>
+      </section>
 
-    <!-- Guest Notice -->
-    <div class="guest-notice" id="guestNotice">
-      <span class="guest-notice-icon">💡</span>
-      <div>
-        <strong>Mehmon sifatida o'ynayapsiz.</strong> 
-        Natijalaringiz saqlanmaydi. Natijalarni saqlash va reytingda qatnashish uchun 
-        <a href="login.html" style="color: #667eea; font-weight: 600;">kirish</a> qiling.
-      </div>
-    </div>
-
-    <!-- Game Controls -->
-    <section class="game-controls">
-      <h2 class="controls-title">O'yinni Boshlash</h2>
-      
-      <div class="form-group">
-        <label for="duration" class="form-label">⏱ O'yin davomiyligini tanlang:</label>
-        <select id="duration" class="form-select">
-          <option value="10">10 soniya - Tez sinov</option>
-          <option value="20">20 soniya - O'rtacha</option>
-          <option value="30" selected>30 soniya - Standart</option>
-          <option value="60">60 soniya - Uzoq muddatli</option>
-          <option value="120">2 daqiqa - Professional</option>
-        </select>
-      </div>
-      
-      <div class="button-group">
-        <button class="btn btn-primary" onclick="startGame()">
-          🚀 O'yinni Boshlash
-        </button>
-        <a href="reyting.html" class="btn btn-success">
-          🏆 Reyting Ko'rish
-        </a>
-      </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-      <h2 class="stats-title">O'yin Statistikasi</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-icon">👥</span>
-          <div class="stat-number" id="totalPlayers">0</div>
-          <div class="stat-label">Jami O'yinchilar</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">🎮</span>
-          <div class="stat-number" id="totalGames">0</div>
-          <div class="stat-label">O'ynalgan O'yinlar</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">🏆</span>
-          <div class="stat-number" id="topScore">0</div>
-          <div class="stat-label">Eng Yuqori Ball</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">⭐</span>
-          <div class="stat-number" id="averageScore">0</div>
-          <div class="stat-label">O'rtacha Ball</div>
+      <!-- Guest Notice -->
+      <div class="guest-notice" id="guestNotice">
+        <span class="guest-notice-icon">💡</span>
+        <div>
+          <strong>Mehmon sifatida o'ynayapsiz.</strong> 
+          Natijalaringiz saqlanmaydi. Natijalarni saqlash va reytingda qatnashish uchun 
+          <a href="login.html" style="color: #667eea; font-weight: 600;">kirish</a> qiling.
         </div>
       </div>
-    </section>
 
-    <!-- Vote Section -->
-    <section class="vote-section">
-      <h2 class="vote-title">O'yinni Baholang</h2>
-      
-      <div class="vote-buttons">
-        <button class="vote-btn like" onclick="handleVote('like')" title="Yoqdi">
-          👍
-        </button>
-        <button class="vote-btn dislike" onclick="handleVote('dislike')" title="Yoqmadi">
-          👎
-        </button>
-      </div>
+      <!-- Game Controls -->
+      <section class="game-controls">
+        <h2 class="controls-title">O'yinni Boshlash</h2>
+        
+        <div class="form-group">
+          <label for="duration" class="form-label">⏱ O'yin davomiyligini tanlang:</label>
+          <select id="duration" class="form-select">
+            <option value="10">10 soniya - Tez sinov</option>
+            <option value="20">20 soniya - O'rtacha</option>
+            <option value="30" selected>30 soniya - Standart</option>
+            <option value="60">60 soniya - Uzoq muddatli</option>
+            <option value="120">2 daqiqa - Professional</option>
+          </select>
+        </div>
+        
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="startGame()">
+            🚀 O'yinni Boshlash
+          </button>
+          <a href="reyting.html" class="btn btn-success">
+            🏆 Reyting Ko'rish
+          </a>
+        </div>
+      </section>
 
-      <div class="vote-stats">
-        <div class="vote-stat">
-          <div class="vote-count" id="likeCount">👍 0</div>
-          <div class="vote-bar">
-            <div class="vote-fill like" id="likeFill"></div>
+      <!-- Vote Section -->
+      <section class="vote-section">
+        <h2 class="vote-title">O'yinni Baholang</h2>
+        
+        <div class="vote-buttons">
+          <button class="vote-btn like" onclick="handleVote('like')" title="Yoqdi">
+            👍
+          </button>
+          <button class="vote-btn dislike" onclick="handleVote('dislike')" title="Yoqmadi">
+            👎
+          </button>
+        </div>
+
+        <div class="vote-stats">
+          <div class="vote-stat">
+            <div class="vote-count" id="likeCount">👍 0</div>
+            <div class="vote-bar">
+              <div class="vote-fill like" id="likeFill"></div>
+            </div>
+            <div class="vote-percent" id="likePercent">0%</div>
           </div>
-          <div class="vote-percent" id="likePercent">0%</div>
-        </div>
-        <div class="vote-stat">
-          <div class="vote-count" id="dislikeCount">👎 0</div>
-          <div class="vote-bar">
-            <div class="vote-fill dislike" id="dislikeFill"></div>
+          <div class="vote-stat">
+            <div class="vote-count" id="dislikeCount">👎 0</div>
+            <div class="vote-bar">
+              <div class="vote-fill dislike" id="dislikeFill"></div>
+            </div>
+            <div class="vote-percent" id="dislikePercent">0%</div>
           </div>
-          <div class="vote-percent" id="dislikePercent">0%</div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
   <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getDatabase, ref, runTransaction, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
@@ -757,6 +689,8 @@
     let currentUser = null;
 
     // DOM Elements
+    const loadingState = document.getElementById('loadingState');
+    const mainContent = document.getElementById('mainContent');
     const loginBtn = document.getElementById('loginBtn');
     const userInfo = document.getElementById('userInfo');
     const guestNotice = document.getElementById('guestNotice');
@@ -764,17 +698,40 @@
     const userEmail = document.getElementById('userEmail');
     const userAvatar = document.getElementById('userAvatar');
 
+    // Show main content after loading
+    function showMainContent() {
+      loadingState.classList.add('hidden');
+      mainContent.classList.remove('hidden');
+    }
+
     // Authentication State
     onAuthStateChanged(auth, (user) => {
+      console.log("🔄 Auth state changed:", user ? user.email : "No user");
       currentUser = user;
+      
+      // Save auth state to localStorage for persistence
+      if (user) {
+        localStorage.setItem('userLoggedIn', 'true');
+        localStorage.setItem('userData', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        }));
+      } else {
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('userData');
+      }
+      
       updateUI();
-      loadStats();
       initializeVoting();
+      showMainContent();
     });
 
     function updateUI() {
       if (currentUser) {
         // User is logged in
+        console.log("✅ User logged in:", currentUser.email);
         loginBtn.classList.add('hidden');
         userInfo.classList.remove('hidden');
         guestNotice.classList.add('hidden');
@@ -786,6 +743,7 @@
         }
       } else {
         // User is guest
+        console.log("👤 User is guest");
         loginBtn.classList.remove('hidden');
         userInfo.classList.add('hidden');
         guestNotice.classList.remove('hidden');
@@ -797,9 +755,12 @@
       if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
         try {
           await signOut(auth);
-          console.log('User signed out successfully');
+          console.log('✅ User signed out successfully');
+          // Clear localStorage
+          localStorage.removeItem('userLoggedIn');
+          localStorage.removeItem('userData');
         } catch (error) {
-          console.error('Sign out error:', error);
+          console.error('❌ Sign out error:', error);
           alert('Chiqishda xatolik yuz berdi.');
         }
       }
@@ -809,33 +770,24 @@
     window.startGame = function() {
       const selectedTime = document.getElementById("duration").value;
       localStorage.setItem("sozTime", selectedTime);
-      localStorage.setItem("isGuest", currentUser ? "false" : "true");
+      
+      // Set user status for game page
+      if (currentUser) {
+        localStorage.setItem("isGuest", "false");
+        localStorage.setItem("currentUser", JSON.stringify({
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          photoURL: currentUser.photoURL
+        }));
+      } else {
+        localStorage.setItem("isGuest", "true");
+        localStorage.removeItem("currentUser");
+      }
+      
+      console.log("🎮 Starting game with user:", currentUser ? currentUser.email : "guest");
       window.location.href = "oyin.html";
     };
-
-    // Load Statistics
-    async function loadStats() {
-      try {
-        const usersRef = ref(db, "users");
-        const snapshot = await get(usersRef);
-        
-        if (snapshot.exists()) {
-          const users = Object.values(snapshot.val());
-          const totalPlayers = users.length;
-          const scores = users.map(u => u.score || 0);
-          const totalGames = users.reduce((sum, u) => sum + (u.gamesPlayed || 1), 0);
-          const topScore = Math.max(...scores);
-          const averageScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
-
-          document.getElementById('totalPlayers').textContent = totalPlayers;
-          document.getElementById('totalGames').textContent = totalGames;
-          document.getElementById('topScore').textContent = topScore;
-          document.getElementById('averageScore').textContent = averageScore;
-        }
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      }
-    }
 
     // Voting System
     function initializeVoting() {
@@ -874,7 +826,7 @@
       const voteRef = ref(db, `globalVotes/${type}`);
       runTransaction(voteRef, (current) => (current || 0) + 1)
         .then(() => {
-          console.log(`Vote recorded: ${type}`);
+          console.log(`✅ Vote recorded: ${type}`);
           // Add visual feedback
           const btn = document.querySelector(`.vote-btn.${type}`);
           btn.style.transform = 'scale(1.2) rotate(10deg)';
@@ -883,7 +835,7 @@
           }, 200);
         })
         .catch((error) => {
-          console.error("Vote error:", error);
+          console.error("❌ Vote error:", error);
         });
     };
 
