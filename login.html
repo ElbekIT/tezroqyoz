@@ -180,6 +180,16 @@
       100% { transform: rotate(360deg); }
     }
 
+    .error-message {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      font-weight: 500;
+    }
+
     @media (max-width: 600px) {
       .login-container {
         padding: 30px 20px;
@@ -222,6 +232,8 @@
       <p style="margin-top: 10px; color: #667eea;">Kirilmoqda...</p>
     </div>
 
+    <div class="error-message" id="errorMessage"></div>
+
     <div class="features">
       <div class="feature">
         <span class="feature-icon">⚡</span>
@@ -261,31 +273,57 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function showLoading(show) {
+      const loginBtn = document.getElementById('loginBtn');
+      const loading = document.getElementById('loading');
+      
+      if (show) {
+        loginBtn.style.display = 'none';
+        loading.style.display = 'block';
+      } else {
+        loginBtn.style.display = 'flex';
+        loading.style.display = 'none';
+      }
+    }
+
     // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("Foydalanuvchi allaqachon tizimda:", user.displayName);
         window.location.href = "index.html";
       }
     });
 
     window.signInWithGoogle = function () {
-      const loginBtn = document.getElementById('loginBtn');
-      const loading = document.getElementById('loading');
+      showLoading(true);
       
-      loginBtn.style.display = 'none';
-      loading.style.display = 'block';
-
       signInWithPopup(auth, provider)
         .then((result) => {
           const user = result.user;
           console.log("✅ Kirish muvaffaqiyatli:", user.displayName);
-          window.location.href = "index.html";
+          // onAuthStateChanged will handle the redirect
         })
         .catch((error) => {
-          console.error("❌ Kirish xatoligi:", error.message);
-          alert("Kirish jarayonida xatolik yuz berdi. Qaytadan urinib ko'ring.");
-          loginBtn.style.display = 'flex';
-          loading.style.display = 'none';
+          console.error("❌ Kirish xatoligi:", error);
+          showLoading(false);
+          
+          let errorMessage = "Kirish jarayonida xatolik yuz berdi.";
+          if (error.code === 'auth/popup-closed-by-user') {
+            errorMessage = "Kirish oynasi yopildi. Qaytadan urinib ko'ring.";
+          } else if (error.code === 'auth/popup-blocked') {
+            errorMessage = "Popup oynasi bloklandi. Brauzer sozlamalarini tekshiring.";
+          }
+          
+          showError(errorMessage);
         });
     };
   </script>

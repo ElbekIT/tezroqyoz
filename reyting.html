@@ -274,6 +274,19 @@
       100% { transform: rotate(360deg); }
     }
 
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+    }
+
+    .empty-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px auto;
+      opacity: 0.5;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 20px 10px;
@@ -345,7 +358,7 @@
 
   <div class="container" id="mainContent" style="display: none;">
     <div class="user-info" id="userInfo">
-      <img id="userAvatar" class="user-avatar" src="/placeholder.svg" alt="User">
+      <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=28&width=28" alt="User">
       <span id="userName"></span>
     </div>
 
@@ -390,25 +403,34 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    let authChecked = false;
+
     // Authentication check
     onAuthStateChanged(auth, (user) => {
+      authChecked = true;
       const loadingOverlay = document.getElementById('loadingOverlay');
       const mainContent = document.getElementById('mainContent');
 
+      console.log("Reyting auth state:", user ? user.displayName : "No user");
+
       if (!user) {
+        console.log("No user in reyting, redirecting to login");
         window.location.href = "login.html";
-      } else {
-        // Update user info
-        document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
-        document.getElementById('userAvatar').src = user.photoURL || '/placeholder.svg?height=28&width=28';
-        
-        // Show content
-        loadingOverlay.style.display = 'none';
-        mainContent.style.display = 'block';
-        
-        // Load leaderboard
-        loadLeaderboard();
+        return;
       }
+
+      // Update user info
+      document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
+      if (user.photoURL) {
+        document.getElementById('userAvatar').src = user.photoURL;
+      }
+      
+      // Show content
+      loadingOverlay.style.display = 'none';
+      mainContent.style.display = 'block';
+      
+      // Load leaderboard
+      loadLeaderboard();
     });
 
     function loadLeaderboard() {
@@ -431,8 +453,6 @@
             else if (rank === 3) rankDisplay = "🥉";
             else rankDisplay = `${rank}`;
             
-            const lastPlayed = user.lastPlayed ? new Date(user.lastPlayed).toLocaleDateString() : "Noma'lum";
-            
             leaderboardList.innerHTML += `
               <div class="leaderboard-item">
                 <div class="player-info">
@@ -449,8 +469,8 @@
           });
         } else {
           leaderboardList.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px; color: #718096;">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 20px auto; opacity: 0.5;">
+            <div class="empty-state">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 2 21M19 21V15M16 18H22M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <p>Hali hech kim o'ynamagan. Birinchi bo'lib o'ynang va reytingda birinchi bo'ling!</p>
@@ -459,6 +479,14 @@
         }
       });
     }
+
+    // Timeout for auth check
+    setTimeout(() => {
+      if (!authChecked) {
+        console.log("Reyting auth timeout, redirecting to login");
+        window.location.href = "login.html";
+      }
+    }, 5000);
   </script>
 </body>
 </html>

@@ -20,7 +20,6 @@
       color: #222b45;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
       overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
     }
     
     body {
@@ -338,6 +337,12 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .main-content {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+    }
     
     /* Responsive styles */
     @media (max-width: 900px) {
@@ -435,16 +440,16 @@
     <p style="color: #667eea; font-weight: 600;">Yuklanmoqda...</p>
   </div>
 
-  <div class="user-info" id="userInfo" style="display: none;">
-    <img id="userAvatar" class="user-avatar" src="/placeholder.svg" alt="User">
-    <div>
-      <div id="userName" style="font-weight: 600;"></div>
-      <div id="userEmail" style="font-size: 0.8rem; opacity: 0.7;"></div>
+  <div class="main-content" id="mainContent">
+    <div class="user-info" id="userInfo">
+      <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=32&width=32" alt="User">
+      <div>
+        <div id="userName" style="font-weight: 600;"></div>
+        <div id="userEmail" style="font-size: 0.8rem; opacity: 0.7;"></div>
+      </div>
+      <button class="logout-btn" onclick="logOut()">🚪 Chiqish</button>
     </div>
-    <button class="logout-btn" onclick="logOut()">🚪 Chiqish</button>
-  </div>
 
-  <div id="mainContent" style="display: none;">
     <h1>🧠 So'z Topish O'yini</h1>
     <div class="welcome-text">
       Bu o'yin orqali siz tanlagan vaqt ichida qancha o'zbekcha so'z topa olishingizni sinab ko'rishingiz mumkin!
@@ -513,52 +518,54 @@
     const dislikeRef = ref(db, "globalVotes/dislike");
 
     let currentUser = null;
+    let authChecked = false;
 
     // Authentication state listener
     onAuthStateChanged(auth, (user) => {
+      authChecked = true;
       const loadingOverlay = document.getElementById('loadingOverlay');
       const mainContent = document.getElementById('mainContent');
-      const userInfo = document.getElementById('userInfo');
+
+      console.log("Auth state changed:", user ? user.displayName : "No user");
 
       if (!user) {
+        console.log("No user found, redirecting to login");
         window.location.href = "login.html";
-      } else {
-        currentUser = user;
-        
-        // Update user info
-        document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
-        document.getElementById('userEmail').textContent = user.email || '';
-        document.getElementById('userAvatar').src = user.photoURL || '/placeholder.svg?height=32&width=32';
-        
-        // Show main content
-        loadingOverlay.style.display = 'none';
-        mainContent.style.display = 'block';
-        userInfo.style.display = 'flex';
+        return;
       }
+
+      currentUser = user;
+      console.log("User authenticated:", user.displayName);
+      
+      // Update user info
+      document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
+      document.getElementById('userEmail').textContent = user.email || '';
+      if (user.photoURL) {
+        document.getElementById('userAvatar').src = user.photoURL;
+      }
+      
+      // Show main content
+      loadingOverlay.style.display = 'none';
+      mainContent.style.display = 'block';
+
+      // Initialize voting system
+      initializeVoting();
     });
 
-    // Logout function
-    window.logOut = function () {
-      if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
-        signOut(auth).then(() => {
-          window.location.href = "login.html";
-        }).catch((error) => {
-          console.error("Chiqish xatoligi:", error);
-        });
-      }
-    };
+    // Initialize voting system
+    function initializeVoting() {
+      let likeCount = 0;
+      let dislikeCount = 0;
 
-    // Start game function
-    window.startGame = function() {
-      const selectedTime = document.getElementById("duration").value;
-      localStorage.setItem("sozTime", selectedTime);
-      window.location.href = "oyin.html";
-    };
-
-    // Ovoz berish funksiyasi
-    window.handleVote = function(type) {
-      const refToUpdate = type === 'like' ? likeRef : dislikeRef;
-      runTransaction(refToUpdate, (current) => (current || 0) + 1);
+      onValue(likeRef, (snap) => {
+        likeCount = snap.val() || 0;
+        updateUI(likeCount, dislikeCount);
+      });
+      
+      onValue(dislikeRef, (snap) => {
+        dislikeCount = snap.val() || 0;
+        updateUI(likeCount, dislikeCount);
+      });
     }
 
     // UI yangilash funksiyasi
@@ -575,19 +582,55 @@
       document.getElementById("dislikePercent").textContent = dislikePercent + "%";
     }
 
-    // Real-time listenerlar
-    let likeCount = 0;
-    let dislikeCount = 0;
+    // Logout function
+    window.logOut = function () {
+      if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
+        signOut(auth).then(() => {
+          console.log("User signed out");
+          window.location.href = "login.html";
+        }).catch((error) => {
+          console.error("Sign out error:", error);
+          alert("Chiqishda xatolik yuz berdi.");
+        });
+      }
+    };
 
-    onValue(likeRef, (snap) => {
-      likeCount = snap.val() || 0;
-      updateUI(likeCount, dislikeCount);
-    });
-    
-    onValue(dislikeRef, (snap) => {
-      dislikeCount = snap.val() || 0;
-      updateUI(likeCount, dislikeCount);
-    });
+    // Start game function
+    window.startGame = function() {
+      if (!currentUser) {
+        alert("Iltimos, avval tizimga kiring!");
+        return;
+      }
+      
+      const selectedTime = document.getElementById("duration").value;
+      localStorage.setItem("sozTime", selectedTime);
+      window.location.href = "oyin.html";
+    };
+
+    // Ovoz berish funksiyasi
+    window.handleVote = function(type) {
+      if (!currentUser) {
+        alert("Ovoz berish uchun tizimga kiring!");
+        return;
+      }
+      
+      const refToUpdate = type === 'like' ? likeRef : dislikeRef;
+      runTransaction(refToUpdate, (current) => (current || 0) + 1)
+        .then(() => {
+          console.log("Vote recorded:", type);
+        })
+        .catch((error) => {
+          console.error("Vote error:", error);
+        });
+    }
+
+    // Timeout for auth check
+    setTimeout(() => {
+      if (!authChecked) {
+        console.log("Auth check timeout, redirecting to login");
+        window.location.href = "login.html";
+      }
+    }, 5000);
   </script>
 </body>
 </html>

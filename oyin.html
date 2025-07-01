@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🧠 So'z Topish O'yini</title>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
     
@@ -344,7 +341,7 @@
 
   <div class="game-container" id="gameContainer" style="display: none;">
     <div class="user-info" id="userInfo">
-      <img id="userAvatar" class="user-avatar" src="/placeholder.svg" alt="User">
+      <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=28&width=28" alt="User">
       <span id="userName"></span>
     </div>
 
@@ -399,6 +396,7 @@
     let currentWord = "";
     let score = 0;
     let gameActive = false;
+    let authChecked = false;
 
     const wordBox = document.getElementById("wordBox");
     const input = document.getElementById("inputWord");
@@ -409,25 +407,32 @@
 
     // Authentication check
     onAuthStateChanged(auth, (user) => {
+      authChecked = true;
       const loadingOverlay = document.getElementById('loadingOverlay');
       const gameContainer = document.getElementById('gameContainer');
 
+      console.log("Game auth state:", user ? user.displayName : "No user");
+
       if (!user) {
+        console.log("No user in game, redirecting to login");
         window.location.href = "login.html";
-      } else {
-        currentUser = user;
-        
-        // Update user info
-        document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
-        document.getElementById('userAvatar').src = user.photoURL || '/placeholder.svg?height=28&width=28';
-        
-        // Show game
-        loadingOverlay.style.display = 'none';
-        gameContainer.style.display = 'block';
-        
-        // Start game
-        initGame();
+        return;
       }
+
+      currentUser = user;
+      
+      // Update user info
+      document.getElementById('userName').textContent = user.displayName || 'Foydalanuvchi';
+      if (user.photoURL) {
+        document.getElementById('userAvatar').src = user.photoURL;
+      }
+      
+      // Show game
+      loadingOverlay.style.display = 'none';
+      gameContainer.style.display = 'block';
+      
+      // Start game
+      initGame();
     });
 
     function newWord() {
@@ -496,20 +501,26 @@
       gameOverScreen.style.display = "block";
 
       // Save score to Firebase
-      const userRef = ref(db, "users/" + currentUser.uid);
-      
-      runTransaction(userRef, (currentData) => {
-        if (currentData === null || !currentData.score || score > currentData.score) {
-          return {
-            name: currentUser.displayName || 'Foydalanuvchi',
-            email: currentUser.email,
-            photoURL: currentUser.photoURL || '',
-            score: score,
-            lastPlayed: Date.now()
-          };
-        }
-        return currentData;
-      });
+      if (currentUser) {
+        const userRef = ref(db, "users/" + currentUser.uid);
+        
+        runTransaction(userRef, (currentData) => {
+          if (currentData === null || !currentData.score || score > currentData.score) {
+            return {
+              name: currentUser.displayName || 'Foydalanuvchi',
+              email: currentUser.email,
+              photoURL: currentUser.photoURL || '',
+              score: score,
+              lastPlayed: Date.now()
+            };
+          }
+          return currentData;
+        }).then(() => {
+          console.log("Score saved successfully");
+        }).catch((error) => {
+          console.error("Error saving score:", error);
+        });
+      }
 
       setTimeout(() => {
         window.location.href = "index.html";
@@ -517,6 +528,7 @@
     }
 
     function initGame() {
+      console.log("Initializing game...");
       newWord();
       input.focus();
       gameActive = true;
@@ -535,6 +547,14 @@
 
       updateScoreboard();
     }
+
+    // Timeout for auth check
+    setTimeout(() => {
+      if (!authChecked) {
+        console.log("Game auth timeout, redirecting to login");
+        window.location.href = "login.html";
+      }
+    }, 5000);
   </script>
 </body>
 </html>
