@@ -686,6 +686,30 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // Netlify uchun HTTPS majburlash
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      location.replace(`https:${location.href.substring(location.protocol.length)}`);
+    }
+
+    // Firebase Auth sozlamalari
+    auth.useDeviceLanguage();
+
+    // Netlify uchun maxsus sozlamalar
+    if (location.hostname.includes('netlify.app')) {
+      console.log("🌐 Running on Netlify");
+      
+      // Auth persistence sozlash
+      import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      
+      setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+          console.log("✅ Auth persistence set for Netlify");
+        })
+        .catch((error) => {
+          console.error("❌ Auth persistence error:", error);
+        });
+    }
+
     let currentUser = null;
 
     // DOM Elements
