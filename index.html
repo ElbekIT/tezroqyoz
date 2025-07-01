@@ -142,6 +142,11 @@
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.3);
       object-fit: cover;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
     }
 
     .user-details h4 {
@@ -473,6 +478,17 @@
       font-size: 1.1rem;
     }
 
+    /* Error State */
+    .error-state {
+      background: rgba(255, 87, 108, 0.1);
+      border: 1px solid rgba(255, 87, 108, 0.3);
+      color: #c53030;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px;
+      text-align: center;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .header-content {
@@ -551,6 +567,11 @@
     🔄 Yuklanmoqda...
   </div>
 
+  <!-- Error State -->
+  <div class="error-state hidden" id="errorState">
+    ❌ Xatolik yuz berdi. Sahifani yangilang.
+  </div>
+
   <!-- Main Content (hidden initially) -->
   <div id="mainContent" class="hidden">
     <!-- Header -->
@@ -574,7 +595,7 @@
 
           <!-- User Info (for logged in users) -->
           <div class="user-info hidden" id="userInfo">
-            <img id="userAvatar" class="user-avatar" src="/placeholder.svg?height=40&width=40" alt="User">
+            <div id="userAvatar" class="user-avatar">👤</div>
             <div class="user-details">
               <h4 id="userName">Foydalanuvchi</h4>
               <p id="userEmail">user@example.com</p>
@@ -667,203 +688,229 @@
 
   <!-- Firebase Script -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    try {
+      // Firebase imports
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getDatabase, ref, runTransaction, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
-      authDomain: "elbekproductions.firebaseapp.com",
-      databaseURL: "https://elbekproductions-default-rtdb.firebaseio.com",
-      projectId: "elbekproductions",
-      storageBucket: "elbekproductions.firebasestorage.app",
-      messagingSenderId: "467619718063",
-      appId: "1:467619718063:web:f370881cffbb396899c55a",
-      measurementId: "G-Y46P6R2H8V"
-    };
+      const firebaseConfig = {
+        apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
+        authDomain: "elbekproductions.firebaseapp.com",
+        databaseURL: "https://elbekproductions-default-rtdb.firebaseio.com",
+        projectId: "elbekproductions",
+        storageBucket: "elbekproductions.firebasestorage.app",
+        messagingSenderId: "467619718063",
+        appId: "1:467619718063:web:f370881cffbb396899c55a",
+        measurementId: "G-Y46P6R2H8V"
+      };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getDatabase(app);
 
-    // Netlify uchun HTTPS majburlash
-    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-      location.replace(`https:${location.href.substring(location.protocol.length)}`);
-    }
-
-    // Firebase Auth sozlamalari
-    auth.useDeviceLanguage();
-
-    // Netlify uchun maxsus sozlamalar
-    if (location.hostname.includes('netlify.app')) {
-      console.log("🌐 Running on Netlify");
-      
-      // Auth persistence sozlash
-      import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-      
-      setPersistence(auth, browserLocalPersistence)
-        .then(() => {
-          console.log("✅ Auth persistence set for Netlify");
-        })
-        .catch((error) => {
-          console.error("❌ Auth persistence error:", error);
-        });
-    }
-
-    let currentUser = null;
-
-    // DOM Elements
-    const loadingState = document.getElementById('loadingState');
-    const mainContent = document.getElementById('mainContent');
-    const loginBtn = document.getElementById('loginBtn');
-    const userInfo = document.getElementById('userInfo');
-    const guestNotice = document.getElementById('guestNotice');
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
-    const userAvatar = document.getElementById('userAvatar');
-
-    // Show main content after loading
-    function showMainContent() {
-      loadingState.classList.add('hidden');
-      mainContent.classList.remove('hidden');
-    }
-
-    // Authentication State
-    onAuthStateChanged(auth, (user) => {
-      console.log("🔄 Auth state changed:", user ? user.email : "No user");
-      currentUser = user;
-      
-      // Save auth state to localStorage for persistence
-      if (user) {
-        localStorage.setItem('userLoggedIn', 'true');
-        localStorage.setItem('userData', JSON.stringify({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        }));
-      } else {
-        localStorage.removeItem('userLoggedIn');
-        localStorage.removeItem('userData');
+      // HTTPS redirect for production
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        location.replace(`https:${location.href.substring(location.protocol.length)}`);
       }
-      
-      updateUI();
-      initializeVoting();
-      showMainContent();
-    });
 
-    function updateUI() {
-      if (currentUser) {
-        // User is logged in
-        console.log("✅ User logged in:", currentUser.email);
-        loginBtn.classList.add('hidden');
-        userInfo.classList.remove('hidden');
-        guestNotice.classList.add('hidden');
+      // Set auth persistence
+      await setPersistence(auth, browserLocalPersistence);
+
+      let currentUser = null;
+
+      // DOM Elements
+      const loadingState = document.getElementById('loadingState');
+      const errorState = document.getElementById('errorState');
+      const mainContent = document.getElementById('mainContent');
+      const loginBtn = document.getElementById('loginBtn');
+      const userInfo = document.getElementById('userInfo');
+      const guestNotice = document.getElementById('guestNotice');
+      const userName = document.getElementById('userName');
+      const userEmail = document.getElementById('userEmail');
+      const userAvatar = document.getElementById('userAvatar');
+
+      // Show main content after loading
+      function showMainContent() {
+        loadingState.classList.add('hidden');
+        errorState.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+      }
+
+      // Show error state
+      function showError() {
+        loadingState.classList.add('hidden');
+        mainContent.classList.add('hidden');
+        errorState.classList.remove('hidden');
+      }
+
+      // Authentication State
+      onAuthStateChanged(auth, (user) => {
+        console.log("🔄 Auth state changed:", user ? user.email : "No user");
+        currentUser = user;
         
-        userName.textContent = currentUser.displayName || 'Foydalanuvchi';
-        userEmail.textContent = currentUser.email || '';
-        if (currentUser.photoURL) {
-          userAvatar.src = currentUser.photoURL;
-        }
-      } else {
-        // User is guest
-        console.log("👤 User is guest");
-        loginBtn.classList.remove('hidden');
-        userInfo.classList.add('hidden');
-        guestNotice.classList.remove('hidden');
-      }
-    }
-
-    // Logout Handler
-    window.handleLogout = async function() {
-      if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
-        try {
-          await signOut(auth);
-          console.log('✅ User signed out successfully');
-          // Clear localStorage
+        // Save auth state to localStorage for persistence
+        if (user) {
+          localStorage.setItem('userLoggedIn', 'true');
+          localStorage.setItem('userData', JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          }));
+        } else {
           localStorage.removeItem('userLoggedIn');
           localStorage.removeItem('userData');
-        } catch (error) {
-          console.error('❌ Sign out error:', error);
-          alert('Chiqishda xatolik yuz berdi.');
+        }
+        
+        updateUI();
+        initializeVoting();
+        showMainContent();
+      });
+
+      function updateUI() {
+        if (currentUser) {
+          // User is logged in
+          console.log("✅ User logged in:", currentUser.email);
+          loginBtn.classList.add('hidden');
+          userInfo.classList.remove('hidden');
+          guestNotice.classList.add('hidden');
+          
+          userName.textContent = currentUser.displayName || 'Foydalanuvchi';
+          userEmail.textContent = currentUser.email || '';
+          
+          // Handle user avatar
+          if (currentUser.photoURL) {
+            userAvatar.innerHTML = `<img src="${currentUser.photoURL}" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">`;
+          } else {
+            userAvatar.innerHTML = '👤';
+          }
+        } else {
+          // User is guest
+          console.log("👤 User is guest");
+          loginBtn.classList.remove('hidden');
+          userInfo.classList.add('hidden');
+          guestNotice.classList.remove('hidden');
         }
       }
-    };
 
-    // Start Game
-    window.startGame = function() {
-      const selectedTime = document.getElementById("duration").value;
-      localStorage.setItem("sozTime", selectedTime);
-      
-      // Set user status for game page
-      if (currentUser) {
-        localStorage.setItem("isGuest", "false");
-        localStorage.setItem("currentUser", JSON.stringify({
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoURL: currentUser.photoURL
-        }));
-      } else {
-        localStorage.setItem("isGuest", "true");
-        localStorage.removeItem("currentUser");
+      // Logout Handler
+      window.handleLogout = async function() {
+        if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
+          try {
+            await signOut(auth);
+            console.log('✅ User signed out successfully');
+            // Clear localStorage
+            localStorage.removeItem('userLoggedIn');
+            localStorage.removeItem('userData');
+          } catch (error) {
+            console.error('❌ Sign out error:', error);
+            alert('Chiqishda xatolik yuz berdi.');
+          }
+        }
+      };
+
+      // Start Game
+      window.startGame = function() {
+        const selectedTime = document.getElementById("duration").value;
+        localStorage.setItem("sozTime", selectedTime);
+        
+        // Set user status for game page
+        if (currentUser) {
+          localStorage.setItem("isGuest", "false");
+          localStorage.setItem("currentUser", JSON.stringify({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          }));
+        } else {
+          localStorage.setItem("isGuest", "true");
+          localStorage.removeItem("currentUser");
+        }
+        
+        console.log("🎮 Starting game with user:", currentUser ? currentUser.email : "guest");
+        window.location.href = "oyin.html";
+      };
+
+      // Voting System
+      function initializeVoting() {
+        try {
+          const likeRef = ref(db, "globalVotes/like");
+          const dislikeRef = ref(db, "globalVotes/dislike");
+
+          let likeCount = 0;
+          let dislikeCount = 0;
+
+          onValue(likeRef, (snap) => {
+            likeCount = snap.val() || 0;
+            updateVoteUI(likeCount, dislikeCount);
+          });
+          
+          onValue(dislikeRef, (snap) => {
+            dislikeCount = snap.val() || 0;
+            updateVoteUI(likeCount, dislikeCount);
+          });
+        } catch (error) {
+          console.error("❌ Voting system error:", error);
+        }
       }
-      
-      console.log("🎮 Starting game with user:", currentUser ? currentUser.email : "guest");
-      window.location.href = "oyin.html";
-    };
 
-    // Voting System
-    function initializeVoting() {
-      const likeRef = ref(db, "globalVotes/like");
-      const dislikeRef = ref(db, "globalVotes/dislike");
+      function updateVoteUI(likes, dislikes) {
+        try {
+          const total = likes + dislikes || 1;
+          const likePercent = ((likes / total) * 100).toFixed(1);
+          const dislikePercent = ((dislikes / total) * 100).toFixed(1);
 
-      let likeCount = 0;
-      let dislikeCount = 0;
+          const likeCountEl = document.getElementById("likeCount");
+          const dislikeCountEl = document.getElementById("dislikeCount");
+          const likeFillEl = document.getElementById("likeFill");
+          const dislikeFillEl = document.getElementById("dislikeFill");
+          const likePercentEl = document.getElementById("likePercent");
+          const dislikePercentEl = document.getElementById("dislikePercent");
 
-      onValue(likeRef, (snap) => {
-        likeCount = snap.val() || 0;
-        updateVoteUI(likeCount, dislikeCount);
-      });
-      
-      onValue(dislikeRef, (snap) => {
-        dislikeCount = snap.val() || 0;
-        updateVoteUI(likeCount, dislikeCount);
-      });
+          if (likeCountEl) likeCountEl.textContent = `👍 ${likes}`;
+          if (dislikeCountEl) dislikeCountEl.textContent = `👎 ${dislikes}`;
+          if (likeFillEl) likeFillEl.style.width = likePercent + "%";
+          if (dislikeFillEl) dislikeFillEl.style.width = dislikePercent + "%";
+          if (likePercentEl) likePercentEl.textContent = likePercent + "%";
+          if (dislikePercentEl) dislikePercentEl.textContent = dislikePercent + "%";
+        } catch (error) {
+          console.error("❌ Vote UI update error:", error);
+        }
+      }
+
+      // Vote Handler
+      window.handleVote = function(type) {
+        try {
+          const voteRef = ref(db, `globalVotes/${type}`);
+          runTransaction(voteRef, (current) => (current || 0) + 1)
+            .then(() => {
+              console.log(`✅ Vote recorded: ${type}`);
+              // Add visual feedback
+              const btn = document.querySelector(`.vote-btn.${type}`);
+              if (btn) {
+                btn.style.transform = 'scale(1.2) rotate(10deg)';
+                setTimeout(() => {
+                  btn.style.transform = '';
+                }, 200);
+              }
+            })
+            .catch((error) => {
+              console.error("❌ Vote error:", error);
+            });
+        } catch (error) {
+          console.error("❌ Vote handler error:", error);
+        }
+      };
+
+      console.log("🚀 Index page loaded successfully");
+
+    } catch (error) {
+      console.error("❌ Firebase initialization error:", error);
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('errorState').classList.remove('hidden');
     }
-
-    function updateVoteUI(likes, dislikes) {
-      const total = likes + dislikes || 1;
-      const likePercent = ((likes / total) * 100).toFixed(1);
-      const dislikePercent = ((dislikes / total) * 100).toFixed(1);
-
-      document.getElementById("likeCount").textContent = `👍 ${likes}`;
-      document.getElementById("dislikeCount").textContent = `👎 ${dislikes}`;
-      document.getElementById("likeFill").style.width = likePercent + "%";
-      document.getElementById("dislikeFill").style.width = dislikePercent + "%";
-      document.getElementById("likePercent").textContent = likePercent + "%";
-      document.getElementById("dislikePercent").textContent = dislikePercent + "%";
-    }
-
-    // Vote Handler
-    window.handleVote = function(type) {
-      const voteRef = ref(db, `globalVotes/${type}`);
-      runTransaction(voteRef, (current) => (current || 0) + 1)
-        .then(() => {
-          console.log(`✅ Vote recorded: ${type}`);
-          // Add visual feedback
-          const btn = document.querySelector(`.vote-btn.${type}`);
-          btn.style.transform = 'scale(1.2) rotate(10deg)';
-          setTimeout(() => {
-            btn.style.transform = '';
-          }, 200);
-        })
-        .catch((error) => {
-          console.error("❌ Vote error:", error);
-        });
-    };
-
-    console.log("🚀 Index page loaded successfully");
   </script>
 </body>
 </html>
