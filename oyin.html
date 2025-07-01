@@ -3,322 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧠 So'z Topish O'yini - O'yin</title>
+  <title>WordMaster Pro - O'yin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      --glass-bg: rgba(255, 255, 255, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    :root {
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-      --danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --glass-bg: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--primary-gradient);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       overflow-x: hidden;
     }
 
-    /* Animated Background */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-      animation: backgroundFloat 25s ease-in-out infinite;
-      z-index: -1;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    @keyframes backgroundFloat {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(-30px, -15px) rotate(120deg); }
-      66% { transform: translate(15px, -30px) rotate(240deg); }
-    }
-
-    /* Loading State */
-    .loading-state {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--primary-gradient);
+    body {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      color: white;
-      font-size: 1.5rem;
-      z-index: 1000;
-    }
-
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Game Container */
-    .game-container {
-      width: 100%;
-      max-width: 700px;
+      min-height: 100vh;
+      padding: 2rem;
       position: relative;
-      z-index: 1;
     }
 
-    /* Header */
-    .game-header {
+    /* Game container */
+    .game-container {
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 20px 30px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border-radius: 30px;
+      padding: 3rem;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      z-index: 10;
+      position: relative;
+      animation: slideUp 0.8s ease-out;
     }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: white;
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      object-fit: cover;
-    }
-
-    .user-details h4 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .user-details p {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-
-    .guest-info {
-      background: rgba(255, 193, 7, 0.2);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 16px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: 1px solid rgba(255, 193, 7, 0.3);
-    }
-
-    .back-btn {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .back-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    /* Game Title */
     .game-title {
-      color: white;
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 900;
-      text-align: center;
-      margin-bottom: 30px;
+      background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      letter-spacing: -0.02em;
     }
 
-    /* Game Stats */
-    .game-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .stat-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    /* Timer */
+    .timer-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .timer {
-      background: var(--warning-gradient);
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      animation: pulse 1s ease-in-out infinite;
     }
 
-    .score {
-      background: var(--success-gradient);
-    }
-
-    /* Word Display */
-    .word-display {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
-      padding: 40px 30px;
-      margin-bottom: 30px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .word-display:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    }
-
-    .current-word {
-      font-size: 3.5rem;
-      font-weight: 900;
-      color: #1a202c;
-      letter-spacing: 4px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      animation: wordPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes wordPulse {
+    @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
     }
 
-    .word-hint {
-      color: #4a5568;
-      font-size: 1.1rem;
-      font-weight: 500;
+    .timer.warning {
+      color: #ff6b6b;
+      animation: shake 0.5s ease-in-out infinite;
     }
 
-    /* Input Section */
-    .input-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Word display */
+    .word-container {
+      background: var(--success-gradient);
       border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+      position: relative;
+      overflow: hidden;
     }
 
-    .input-label {
-      color: #2d3748;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      text-align: center;
+    .word-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shine 3s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .word-display {
+      font-size: 3rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Input */
+    .input-container {
+      margin-bottom: 2rem;
     }
 
     .word-input {
       width: 100%;
-      padding: 20px 25px;
-      border: 3px solid #e2e8f0;
-      border-radius: 16px;
-      font-size: 1.5rem;
-      font-weight: 600;
+      max-width: 400px;
+      padding: 1.5rem;
+      font-size: 1.3rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      color: white;
       text-align: center;
-      background: white;
-      color: #1a202c;
       outline: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      letter-spacing: 2px;
-    }
-
-    .word-input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-      transform: translateY(-2px);
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
     }
 
     .word-input::placeholder {
-      color: #a0aec0;
-      font-weight: 500;
-      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .word-input:focus {
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .word-input.correct {
-      border-color: #48bb78;
-      background: #f0fff4;
-      animation: correctPulse 0.6s ease;
+      border-color: #4facfe;
+      box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+      animation: correctPulse 0.5s ease-out;
     }
 
     .word-input.incorrect {
-      border-color: #f56565;
-      background: #fffafa;
-      animation: incorrectShake 0.6s ease;
+      border-color: #fa709a;
+      box-shadow: 0 0 20px rgba(250, 112, 154, 0.5);
+      animation: incorrectShake 0.5s ease-out;
     }
 
     @keyframes correctPulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.2); }
       100% { transform: scale(1); }
     }
 
@@ -328,507 +211,523 @@
       75% { transform: translateX(10px); }
     }
 
-    /* Game Over Screen */
-    .game-over {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 24px;
-      padding: 40px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      display: none;
-      animation: slideUp 0.6s ease-out;
+    /* Score */
+    .score-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes slideUp {
+    .score {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Leaderboard */
+    .leaderboard {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-top: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .leaderboard-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .leaderboard-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(5px);
+    }
+
+    .leaderboard-item:first-child {
+      background: var(--success-gradient);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .leaderboard-item:nth-child(2) {
+      background: rgba(192, 192, 192, 0.3);
+    }
+
+    .leaderboard-item:nth-child(3) {
+      background: rgba(205, 127, 50, 0.3);
+    }
+
+    /* Delete button */
+    .delete-btn {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      background: var(--danger-gradient);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .delete-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(250, 112, 154, 0.4);
+    }
+
+    /* Game over modal */
+    .game-over-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-over-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      padding: 3rem;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      animation: modalSlideUp 0.5s ease-out;
+    }
+
+    @keyframes modalSlideUp {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(50px) scale(0.9);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
-    .game-over.show {
-      display: block;
-    }
-
-    .game-over-title {
-      color: #1a202c;
-      font-size: 2.5rem;
+    .modal-title {
+      font-size: 2rem;
       font-weight: 800;
-      margin-bottom: 20px;
+      color: white;
+      margin-bottom: 1rem;
     }
 
-    .final-score {
-      font-size: 4rem;
+    .modal-score {
+      font-size: 3rem;
       font-weight: 900;
       background: var(--success-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin: 20px 0;
+      margin-bottom: 1rem;
     }
 
-    .game-over-message {
-      color: #4a5568;
+    .modal-message {
+      color: rgba(255, 255, 255, 0.8);
       font-size: 1.1rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
+      margin-bottom: 2rem;
     }
 
-    .countdown {
-      color: #718096;
-      font-size: 1rem;
-      font-weight: 500;
+    .modal-btn {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .hidden {
-      display: none !important;
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
     }
 
-    /* Responsive Design */
+    /* Responsive design */
     @media (max-width: 768px) {
       body {
-        padding: 16px;
+        padding: 1rem;
       }
 
-      .game-header {
-        padding: 16px 20px;
-        flex-direction: column;
-        gap: 16px;
+      .game-container {
+        padding: 2rem;
+        border-radius: 20px;
       }
 
       .game-title {
         font-size: 2rem;
       }
 
-      .current-word {
-        font-size: 2.5rem;
-        letter-spacing: 2px;
-      }
-
-      .word-input {
-        padding: 16px 20px;
-        font-size: 1.2rem;
-      }
-
-      .game-stats {
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
-
-      .stat-value {
-        font-size: 1.5rem;
-      }
-
-      .final-score {
-        font-size: 3rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .game-title {
-        font-size: 1.8rem;
-      }
-
-      .current-word {
+      .word-display {
         font-size: 2rem;
-        letter-spacing: 1px;
       }
 
       .word-input {
         font-size: 1.1rem;
+        padding: 1.2rem;
       }
 
-      .game-stats {
-        grid-template-columns: 1fr;
+      .timer {
+        font-size: 1.5rem;
       }
+
+      .delete-btn {
+        bottom: 1rem;
+        left: 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .modal-content {
+        padding: 2rem;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-score {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 1.5rem;
+      }
+
+      .game-title {
+        font-size: 1.5rem;
+      }
+
+      .word-display {
+        font-size: 1.5rem;
+      }
+
+      .leaderboard {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Scrollbar */
+    .leaderboard::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .leaderboard::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .leaderboard::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+
+    .leaderboard::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
     }
   </style>
 </head>
 <body>
-  <!-- Loading State -->
-  <div class="loading-state" id="loadingState">
-    <div class="loading-spinner"></div>
-    <div>O'yin yuklanmoqda...</div>
-  </div>
-
-  <!-- Game Container -->
-  <div class="game-container hidden" id="gameContainer">
-    <!-- Game Header -->
-    <div class="game-header">
-      <div id="userInfoContainer">
-        <!-- User info will be inserted here -->
-      </div>
-      
-      <a href="index.html" class="back-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Bosh sahifa
-      </a>
+  <!-- Game container -->
+  <div class="game-container">
+    <h1 class="game-title">🧠 WordMaster Pro</h1>
+    
+    <div class="timer-container">
+      <div class="timer" id="timer">⏳ O'yin boshlanmoqda...</div>
     </div>
 
-    <!-- Game Title -->
-    <h1 class="game-title">🧠 So'z Topish O'yini</h1>
-
-    <!-- Game Stats -->
-    <div class="game-stats">
-      <div class="stat-card timer">
-        <div class="stat-label">⏱ Qolgan vaqt</div>
-        <div class="stat-value" id="timer">30</div>
-      </div>
-      <div class="stat-card score">
-        <div class="stat-label">🏆 Ball</div>
-        <div class="stat-value" id="score">0</div>
-      </div>
+    <div class="word-container">
+      <div class="word-display" id="wordDisplay">...</div>
     </div>
 
-    <!-- Word Display -->
-    <div class="word-display">
-      <div class="current-word" id="currentWord">BOSHLASH</div>
-      <div class="word-hint">Yuqoridagi so'zni quyidagi maydonga yozing</div>
-    </div>
-
-    <!-- Input Section -->
-    <div class="input-section">
-      <div class="input-label">So'zni yozing va Enter bosing:</div>
+    <div class="input-container">
       <input 
         type="text" 
         id="wordInput" 
         class="word-input" 
-        placeholder="So'zni shu yerga yozing..."
+        placeholder="So'zni yozing va Enter bosing"
         autocomplete="off"
-        autocapitalize="off"
-        spellcheck="false"
+        disabled
       />
     </div>
 
-    <!-- Game Over Screen -->
-    <div class="game-over" id="gameOverScreen">
-      <div class="game-over-title">🎉 O'yin Tugadi!</div>
-      <div class="final-score" id="finalScore">0</div>
-      <div class="game-over-message" id="gameOverMessage">
-        Ajoyib natija! Sizning ballingiz saqlandi.
-      </div>
-      <div class="countdown" id="countdown">
-        3 soniyadan keyin bosh sahifaga qaytasiz...
+    <div class="score-container">
+      <div class="score" id="score">🏆 Ball: 0</div>
+    </div>
+
+    <div class="leaderboard">
+      <h3 class="leaderboard-title">🏆 Eng Yaxshi Natijalar</h3>
+      <div id="leaderboardList">
+        <div style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 2rem;">
+          Yuklanmoqda...
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Firebase Script -->
+  <!-- Delete button -->
+  <button class="delete-btn" onclick="deleteAccount()">
+    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v7h2v-7h-2zm4 0v7h2v-7h-2zm-8 0v7h2v-7H7z"/>
+    </svg>
+    Akkauntni O'chirish
+  </button>
+
+  <!-- Game over modal -->
+  <div class="game-over-modal" id="gameOverModal">
+    <div class="modal-content">
+      <div class="modal-title">🎉 O'yin Tugadi!</div>
+      <div class="modal-score" id="finalScore">0</div>
+      <div class="modal-message" id="modalMessage">Ajoyib natija!</div>
+      <button class="modal-btn" onclick="goHome()">🏠 Bosh Sahifaga</button>
+    </div>
+  </div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
       authDomain: "elbekproductions.firebaseapp.com",
       databaseURL: "https://elbekproductions-default-rtdb.firebaseio.com",
       projectId: "elbekproductions",
-      storageBucket: "elbekproductions.firebasestorage.app",
+      storageBucket: "elbekproductions.appspot.com",
       messagingSenderId: "467619718063",
-      appId: "1:467619718063:web:f370881cffbb396899c55a",
-      measurementId: "G-Y46P6R2H8V"
+      appId: "1:467619718063:web:f370881cffbb396899c55a"
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Game Variables
-    let currentUser = null;
-    let isGuest = true;
-    let gameTime = parseInt(localStorage.getItem("sozTime") || "30");
-    let currentWord = "";
-    let score = 0;
-    let gameActive = false;
-    let timeLeft = gameTime;
+    const user = JSON.parse(localStorage.getItem("sozUser"));
+    if (!user) window.location.href = "register.html";
 
-    // Word List
+    let time = parseInt(localStorage.getItem("sozTime") || "10");
     const wordList = [
       "olma", "kitob", "telefon", "maktab", "uy", "daraxt", "qush", "oy", "quyosh", "bolajon",
       "suv", "non", "oila", "do'st", "sevgi", "baxt", "umid", "hayot", "vatan", "ona",
       "ota", "bola", "qiz", "o'g'il", "aka", "opa", "sinf", "ustoz", "dars", "savol",
-      "javob", "daftar", "stol", "stul", "deraza", "eshik", "pol", "shift", "rang", "oq",
-      "qora", "qizil", "ko'k", "yashil", "sariq", "binafsha", "pushti", "jigar", "bosh",
-      "qo'l", "oyoq", "ko'z", "quloq", "burun", "og'iz", "tish", "til", "soch", "yuz"
+      "javob", "kitob", "qalam", "daftar", "stol", "stul", "deraza", "eshik", "pol", "shift"
     ];
 
-    // DOM Elements
-    const loadingState = document.getElementById('loadingState');
-    const gameContainer = document.getElementById('gameContainer');
-    const userInfoContainer = document.getElementById('userInfoContainer');
-    const timerElement = document.getElementById('timer');
-    const scoreElement = document.getElementById('score');
-    const currentWordElement = document.getElementById('currentWord');
-    const wordInput = document.getElementById('wordInput');
-    const gameOverScreen = document.getElementById('gameOverScreen');
-    const finalScore = document.getElementById('finalScore');
-    const gameOverMessage = document.getElementById('gameOverMessage');
-    const countdown = document.getElementById('countdown');
+    let currentWord = "";
+    let score = 0;
+    let gameActive = false;
 
-    // Show game after loading
-    function showGame() {
-      loadingState.classList.add('hidden');
-      gameContainer.classList.remove('hidden');
-    }
+    const wordDisplay = document.getElementById("wordDisplay");
+    const wordInput = document.getElementById("wordInput");
+    const timer = document.getElementById("timer");
+    const scoreElement = document.getElementById("score");
+    const gameOverModal = document.getElementById("gameOverModal");
+    const finalScore = document.getElementById("finalScore");
+    const modalMessage = document.getElementById("modalMessage");
 
-    // Check user authentication
-    function checkUserAuth() {
-      // Check localStorage first for immediate feedback
-      const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
-      const userData = localStorage.getItem('userData');
-      
-      if (userLoggedIn && userData) {
-        try {
-          const user = JSON.parse(userData);
-          console.log("✅ User found in localStorage:", user.email);
-          isGuest = false;
-          currentUser = user;
-          updateUserInfo();
-        } catch (error) {
-          console.error("❌ Error parsing user data:", error);
-          isGuest = true;
-        }
-      } else {
-        console.log("👤 No user in localStorage, checking guest status");
-        isGuest = localStorage.getItem("isGuest") !== "false";
-      }
-    }
-
-    // Authentication
-    onAuthStateChanged(auth, (user) => {
-      console.log("🔄 Auth state changed in game:", user ? user.email : "No user");
-      
-      if (user) {
-        currentUser = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        };
-        isGuest = false;
-        console.log("✅ Firebase user authenticated:", user.email);
-      } else {
-        // Check localStorage as fallback
-        checkUserAuth();
-      }
-      
-      updateUserInfo();
-      showGame();
-      
-      // Start game after a short delay
-      setTimeout(() => {
-        initGame();
-      }, 500);
-    });
-
-    function updateUserInfo() {
-      if (currentUser && !isGuest) {
-        userInfoContainer.innerHTML = `
-          <div class="user-info">
-            <img class="user-avatar" src="${currentUser.photoURL || '/placeholder.svg?height=40&width=40'}" alt="User">
-            <div class="user-details">
-              <h4>${currentUser.displayName || 'Foydalanuvchi'}</h4>
-              <p>${currentUser.email || ''}</p>
-            </div>
-          </div>
-        `;
-        console.log("✅ Showing user info for:", currentUser.displayName);
-      } else {
-        userInfoContainer.innerHTML = `
-          <div class="guest-info">
-            👤 Mehmon
-          </div>
-        `;
-        console.log("👤 Showing guest info");
-      }
-    }
-
-    // Game Functions
     function getRandomWord() {
       return wordList[Math.floor(Math.random() * wordList.length)];
     }
 
     function newWord() {
       currentWord = getRandomWord();
-      currentWordElement.textContent = currentWord.toUpperCase();
+      wordDisplay.textContent = currentWord;
       wordInput.value = "";
-      wordInput.className = "word-input";
+      wordInput.focus();
     }
 
-    function updateDisplay() {
-      timerElement.textContent = timeLeft;
-      scoreElement.textContent = score;
+    function updateScore() {
+      score++;
+      scoreElement.textContent = `🏆 Ball: ${score}`;
+      
+      // Add score animation
+      scoreElement.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        scoreElement.style.transform = 'scale(1)';
+      }, 200);
     }
 
     function checkAnswer() {
-      const userAnswer = wordInput.value.trim().toLowerCase();
+      const userInput = wordInput.value.trim().toLowerCase();
+      const correctAnswer = currentWord.toLowerCase();
       
-      if (userAnswer === currentWord.toLowerCase()) {
-        score++;
-        wordInput.className = "word-input correct";
-        newWord();
-        
-        // Visual feedback
-        currentWordElement.style.color = "#48bb78";
+      if (userInput === correctAnswer) {
+        updateScore();
+        wordInput.classList.add('correct');
         setTimeout(() => {
-          currentWordElement.style.color = "#1a202c";
+          wordInput.classList.remove('correct');
+          newWord();
         }, 300);
       } else {
-        wordInput.className = "word-input incorrect";
-        wordInput.value = "";
-        
-        // Visual feedback
-        currentWordElement.style.color = "#f56565";
+        wordInput.classList.add('incorrect');
         setTimeout(() => {
-          currentWordElement.style.color = "#1a202c";
-        }, 300);
+          wordInput.classList.remove('incorrect');
+          wordInput.value = "";
+        }, 500);
       }
+    }
+
+    function updateLeaderboard() {
+      const leaderboardList = document.getElementById("leaderboardList");
+      const usersRef = ref(db, "users");
       
-      updateDisplay();
+      onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        leaderboardList.innerHTML = "";
+        
+        if (data) {
+          const sorted = Object.values(data).sort((a, b) => b.score - a.score);
+          sorted.slice(0, 10).forEach((u, i) => {
+            const item = document.createElement('div');
+            item.className = 'leaderboard-item';
+            
+            let medal = '';
+            if (i === 0) medal = '🥇';
+            else if (i === 1) medal = '🥈';
+            else if (i === 2) medal = '🥉';
+            else medal = `${i + 1}.`;
+            
+            item.innerHTML = `
+              <span>${medal} ${u.name}</span>
+              <span>${u.score} ball</span>
+            `;
+            leaderboardList.appendChild(item);
+          });
+        } else {
+          leaderboardList.innerHTML = '<div style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 1rem;">Hali natijalar yo\'q</div>';
+        }
+      });
     }
 
     function endGame() {
       gameActive = false;
       wordInput.disabled = true;
+      timer.textContent = "⏰ O'yin tugadi!";
       
+      // Save score to Firebase
+      const userRef = ref(db, "users/" + user.phone);
+      onValue(userRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data || score > data.score) {
+          set(userRef, {
+            name: user.name,
+            phone: user.phone,
+            score: score,
+            lastPlayed: new Date().toISOString()
+          });
+        }
+      }, { onlyOnce: true });
+
+      // Show game over modal
       finalScore.textContent = score;
       
-      if (currentUser && !isGuest) {
-        saveScore();
-        gameOverMessage.innerHTML = `
-          <strong>Ajoyib natija!</strong><br>
-          Sizning ballingiz saqlandi va reytingda ko'rsatiladi.<br>
-          <small>Foydalanuvchi: ${currentUser.displayName || currentUser.email}</small>
-        `;
-        console.log("✅ Saving score for user:", currentUser.displayName);
-      } else {
-        gameOverMessage.innerHTML = `
-          <strong>Yaxshi natija!</strong><br>
-          Natijangiz saqlanmadi. Natijalarni saqlash uchun 
-          <a href="login.html" style="color: #667eea; font-weight: 600;">kirish</a> qiling.
-        `;
-        console.log("👤 Guest game completed, score not saved");
-      }
+      let message = "";
+      if (score >= 20) message = "🔥 Fantastik! Siz haqiqiy so'z ustasisiz!";
+      else if (score >= 15) message = "🌟 Ajoyib natija! Juda yaxshi o'ynadingiz!";
+      else if (score >= 10) message = "👏 Yaxshi natija! Davom eting!";
+      else if (score >= 5) message = "💪 Yomon emas! Mashq qiling!";
+      else message = "🎯 Boshlang'ich natija. Yana harakat qiling!";
       
-      gameOverScreen.classList.add('show');
-      
-      // Countdown
-      let countdownTime = 3;
-      const countdownInterval = setInterval(() => {
-        countdown.textContent = `${countdownTime} soniyadan keyin bosh sahifaga qaytasiz...`;
-        countdownTime--;
-        
-        if (countdownTime < 0) {
-          clearInterval(countdownInterval);
-          window.location.href = "index.html";
-        }
-      }, 1000);
+      modalMessage.textContent = message;
+      gameOverModal.classList.add('show');
     }
 
-    function saveScore() {
-      if (!currentUser || isGuest) {
-        console.log("❌ Cannot save score: no user or guest mode");
-        return;
-      }
-      
-      console.log("💾 Attempting to save score:", score, "for user:", currentUser.uid);
-      
-      const userRef = ref(db, "users/" + currentUser.uid);
-      
-      runTransaction(userRef, (currentData) => {
-        const newData = {
-          name: currentUser.displayName || 'Foydalanuvchi',
-          email: currentUser.email,
-          photoURL: currentUser.photoURL || '',
-          score: score,
-          lastPlayed: Date.now(),
-          gamesPlayed: (currentData?.gamesPlayed || 0) + 1
-        };
-        
-        // Only update if new score is higher
-        if (!currentData || !currentData.score || score > currentData.score) {
-          console.log("✅ New high score! Saving:", score);
-          return newData;
-        } else {
-          // Update games played but keep the higher score
-          console.log("📊 Updating games played, keeping high score:", currentData.score);
-          return {
-            ...currentData,
-            gamesPlayed: newData.gamesPlayed,
-            lastPlayed: newData.lastPlayed
-          };
-        }
-      }).then(() => {
-        console.log("✅ Score saved successfully");
-      }).catch((error) => {
-        console.error("❌ Error saving score:", error);
-      });
-    }
-
-    function initGame() {
-      console.log("🎮 Initializing game...");
-      console.log("👤 User status:", isGuest ? "Guest" : "Logged in");
-      console.log("⏱ Game time:", gameTime, "seconds");
-      
-      // Reset game state
-      score = 0;
-      timeLeft = gameTime;
+    function startGame() {
       gameActive = true;
-      
-      // Setup UI
-      updateDisplay();
+      wordInput.disabled = false;
       newWord();
       
-      // Focus input
-      wordInput.focus();
-      wordInput.disabled = false;
+      timer.textContent = `⏳ ${time} soniya qoldi`;
       
-      // Start timer
-      const gameInterval = setInterval(() => {
-        timeLeft--;
-        updateDisplay();
+      const interval = setInterval(() => {
+        time--;
+        timer.textContent = `⏳ ${time} soniya qoldi`;
         
-        // Change timer color when time is running out
-        if (timeLeft <= 10) {
-          timerElement.style.color = "#f56565";
+        if (time <= 10) {
+          timer.classList.add('warning');
         }
         
-        if (timeLeft <= 0) {
-          clearInterval(gameInterval);
+        if (time <= 0) {
+          clearInterval(interval);
           endGame();
         }
       }, 1000);
-      
-      console.log("✅ Game initialized successfully");
     }
 
-    // Event Listeners
-    wordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && gameActive) {
+    // Event listeners
+    wordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && gameActive) {
         checkAnswer();
       }
     });
 
-    // Prevent form submission
-    wordInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
+    // Initialize game
+    updateLeaderboard();
+    
+    // Start game after a short delay
+    setTimeout(() => {
+      startGame();
+    }, 1000);
+
+    // Global functions
+    window.deleteAccount = () => {
+      if (confirm("Haqiqatan ham akkauntingizni o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi.")) {
+        const userRef = ref(db, "users/" + user.phone);
+        remove(userRef).then(() => {
+          localStorage.removeItem("sozUser");
+          alert("Akkaunt muvaffaqiyatli o'chirildi.");
+          window.location.href = "register.html";
+        });
       }
-    });
+    };
 
-    // Initialize on page load
-    checkUserAuth();
-
-    console.log("🚀 Game page loaded successfully");
+    window.goHome = () => {
+      window.location.href = "index.html";
+    };
   </script>
 </body>
 </html>
