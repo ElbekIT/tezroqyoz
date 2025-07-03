@@ -3,531 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WordMaster Pro - O'yin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>O'yin - So‘z Topish</title>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
   <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-      --glass-bg: rgba(255, 255, 255, 0.25);
-      --glass-border: rgba(255, 255, 255, 0.18);
-      --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      overflow-x: hidden;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
     body {
+      font-family: 'Fira Mono', 'JetBrains Mono', 'Consolas', monospace;
+      background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+      color: #e0e0e0;
+      text-align: center;
+      padding: 40px 16px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
-      position: relative;
-    }
-
-    /* Game container */
-    .game-container {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 30px;
-      padding: 3rem;
-      box-shadow: var(--shadow-soft);
-      text-align: center;
-      max-width: 600px;
-      width: 100%;
-      z-index: 10;
-      position: relative;
-      animation: slideUp 0.8s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .game-title {
-      font-size: 2.5rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 2rem;
-      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Timer */
-    .timer-container {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .timer {
-      font-size: 2rem;
-      font-weight: 800;
-      color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      animation: pulse 1s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    .timer.warning {
-      color: #ff6b6b;
-      animation: shake 0.5s ease-in-out infinite;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    /* Word display */
-    .word-container {
-      background: var(--success-gradient);
-      border-radius: 20px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .word-container::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      animation: shine 3s ease-in-out infinite;
-    }
-
-    @keyframes shine {
-      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-    }
-
-    .word-display {
-      font-size: 3rem;
-      font-weight: 900;
-      color: white;
-      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      letter-spacing: 2px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Input */
-    .input-container {
-      margin-bottom: 2rem;
-    }
-
-    .word-input {
-      width: 100%;
-      max-width: 400px;
-      padding: 1.5rem;
-      font-size: 1.3rem;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 15px;
-      color: white;
-      text-align: center;
-      outline: none;
-      transition: all 0.3s ease;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-    }
-
-    .word-input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .word-input:focus {
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .word-input.correct {
-      border-color: #4facfe;
-      box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
-      animation: correctPulse 0.5s ease-out;
-    }
-
-    .word-input.incorrect {
-      border-color: #fa709a;
-      box-shadow: 0 0 20px rgba(250, 112, 154, 0.5);
-      animation: incorrectShake 0.5s ease-out;
-    }
-
-    @keyframes correctPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes incorrectShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-    }
-
-    /* Score */
-    .score-container {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 1rem 2rem;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .score {
-      font-size: 1.5rem;
+      justify-content: flex-start;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+      color: #222;
+        }
+        h1 {
+      color: #2e3a59;
+      text-shadow: 0 2px 8px #cfd8dc;
+      font-family: 'Segoe UI', 'Fira Mono', monospace;
+      letter-spacing: 1px;
+      font-size: 2.3em;
+      margin-bottom: 18px;
+      margin-top: 0;
       font-weight: 700;
-      color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Leaderboard */
-    .leaderboard {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 2rem;
-      margin-top: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .leaderboard-title {
-      color: white;
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-    }
-
-    .leaderboard-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.5rem;
-      background: rgba(255, 255, 255, 0.1);
+        }
+        #wordBox {
+      font-size: 2em;
+      margin: 32px 0 24px 0;
+      font-weight: bold;
+      color: #fff;
+      background: #4f8cff;
+      border: none;
+      border-radius: 16px;
+      padding: 22px 0;
+      letter-spacing: 4px;
+      box-shadow: 0 4px 24px #b3c6ff;
+      transition: background 0.2s;
+      max-width: 95vw;
+      word-break: break-all;
+        }
+        #inputWord {
+      font-size: 1.2em;
+      padding: 15px;
+      width: 100%;
+      max-width: 420px;
+      border: 2px solid #4f8cff;
       border-radius: 10px;
-      color: white;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .leaderboard-item:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateX(5px);
-    }
-
-    .leaderboard-item:first-child {
-      background: var(--success-gradient);
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .leaderboard-item:nth-child(2) {
-      background: rgba(192, 192, 192, 0.3);
-    }
-
-    .leaderboard-item:nth-child(3) {
-      background: rgba(205, 127, 50, 0.3);
-    }
-
-    /* Delete button */
-    .delete-btn {
-      position: fixed;
-      bottom: 2rem;
-      left: 2rem;
-      background: var(--danger-gradient);
-      color: white;
-      border: none;
-      border-radius: 15px;
-      padding: 1rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      z-index: 100;
-    }
-
-    .delete-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(250, 112, 154, 0.4);
-    }
-
-    /* Game over modal */
-    .game-over-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .game-over-modal.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal-content {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 30px;
-      padding: 3rem;
+      background: #fff;
+      color: #2e3a59;
+      outline: none;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px #e3eafc inset;
+      transition: border 0.2s, box-shadow 0.2s;
       text-align: center;
-      max-width: 400px;
-      width: 90%;
-      animation: modalSlideUp 0.5s ease-out;
-    }
-
-    @keyframes modalSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .modal-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: white;
-      margin-bottom: 1rem;
-    }
-
-    .modal-score {
-      font-size: 3rem;
-      font-weight: 900;
-      background: var(--success-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1rem;
-    }
-
-    .modal-message {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
-
-    .modal-btn {
-      background: var(--primary-gradient);
-      color: white;
+        }
+        #inputWord:focus {
+      border: 2px solid #2e3a59;
+      box-shadow: 0 0 18px #b3c6ff;
+        }
+        #timer {
+      font-size: 1.2em;
+      color: #4f8cff;
+      margin: 20px 0 10px 0;
+      text-shadow: 0 1px 8px #b3c6ff;
+      font-family: 'Segoe UI', monospace;
+      font-weight: bold;
+        }
+        #score {
+      font-size: 1.1em;
+      color: #2e3a59;
+      margin-bottom: 12px;
+      text-shadow: 0 1px 6px #b3c6ff;
+      font-weight: bold;
+        }
+        .btn {
+      padding: 14px 32px;
+      font-size: 1.1em;
       border: none;
-      border-radius: 15px;
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
-      font-weight: 600;
+      margin-top: 28px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%);
+      color: #fff;
       cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .modal-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
+      font-family: 'Segoe UI', monospace;
+      font-weight: bold;
+      box-shadow: 0 2px 14px #b3c6ff;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      outline: none;
+        }
+        .btn:hover, .btn:focus {
+      background: linear-gradient(90deg, #6ee7b7 0%, #4f8cff 100%);
+      color: #2e3a59;
+      box-shadow: 0 4px 24px #b3c6ff;
+        }
+        .delete {
+      background: linear-gradient(90deg, #ff6b6b 0%, #ffb199 100%);
+      color: #fff;
+      margin-top: 18px;
+      box-shadow: 0 2px 14px #ffb199;
+        }
+        .delete:hover, .delete:focus {
+      background: linear-gradient(90deg, #ffb199 0%, #ff6b6b 100%);
+      box-shadow: 0 4px 24px #ffb199;
+        }
+        #leaderboard {
+      margin-top: 54px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 0 14px 0;
+      box-shadow: 0 4px 24px #b3c6ff;
+      max-width: 420px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      overflow: hidden;
+        }
+        #leaderboard h3 {
+      color: #4f8cff;
+      text-shadow: 0 1px 8px #b3c6ff;
+      margin-bottom: 16px;
+      font-family: 'Segoe UI', monospace;
+      font-size: 1.3em;
+      letter-spacing: 1px;
+        }
+        #leaderboard div {
+      border-bottom: 1px solid #e0e7ef;
+      padding: 10px 0;
+      color: #2e3a59;
+      font-family: 'Segoe UI', monospace;
+      font-size: 1.08em;
+      word-break: break-all;
+        }
+        #leaderboard div strong {
+      color: #4f8cff;
+        }
+        ::-webkit-scrollbar {
+      width: 8px;
+      background: #e0e7ef;
+        }
+        ::-webkit-scrollbar-thumb {
+      background: #4f8cff;
+      border-radius: 4px;
+        }
+        @media (max-width: 600px) {
       body {
-        padding: 1rem;
+        padding: 18px 2vw;
       }
-
-      .game-container {
-        padding: 2rem;
-        border-radius: 20px;
+      h1 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
       }
-
-      .game-title {
-        font-size: 2rem;
+      #wordBox {
+        font-size: 1.1em;
+        padding: 13px 0;
+        border-radius: 10px;
+        margin: 18px 0 14px 0;
       }
-
-      .word-display {
-        font-size: 2rem;
+      #inputWord {
+        font-size: 1em;
+        padding: 10px;
+        max-width: 98vw;
+        border-radius: 7px;
       }
-
-      .word-input {
-        font-size: 1.1rem;
-        padding: 1.2rem;
+      #timer {
+        font-size: 1em;
+        margin: 12px 0 7px 0;
       }
-
-      .timer {
-        font-size: 1.5rem;
+      #score {
+        font-size: 1em;
+        margin-bottom: 8px;
       }
-
-      .delete-btn {
-        bottom: 1rem;
-        left: 1rem;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
+      .btn, .delete {
+        font-size: 1em;
+        padding: 10px 18px;
+        border-radius: 7px;
+        margin-top: 14px;
       }
-
-      .modal-content {
-        padding: 2rem;
+      #leaderboard {
+        max-width: 98vw;
+        border-radius: 10px;
+        padding: 14px 0 7px 0;
+        margin-top: 24px;
       }
-
-      .modal-title {
-        font-size: 1.5rem;
+      #leaderboard h3 {
+        font-size: 1em;
+        margin-bottom: 8px;
       }
-
-      .modal-score {
-        font-size: 2rem;
+      #leaderboard div {
+        font-size: 0.97em;
+        padding: 6px 0;
       }
-    }
-
-    @media (max-width: 480px) {
-      .game-container {
-        padding: 1.5rem;
-      }
-
-      .game-title {
-        font-size: 1.5rem;
-      }
-
-      .word-display {
-        font-size: 1.5rem;
-      }
-
-      .leaderboard {
-        padding: 1.5rem;
-      }
-    }
-
-    /* Scrollbar */
-    .leaderboard::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .leaderboard::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-    }
-
-    .leaderboard::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 3px;
-    }
-
-    .leaderboard::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
+        }
   </style>
 </head>
 <body>
-  <!-- Game container -->
-  <div class="game-container">
-    <h1 class="game-title">🧠 WordMaster Pro</h1>
-    
-    <div class="timer-container">
-      <div class="timer" id="timer">⏳ O'yin boshlanmoqda...</div>
-    </div>
+  <h1>🧠 So‘z Topish O‘yini</h1>
+  <div id="timer">⏳ O'yin boshlanmoqda...</div>
+  <div id="wordBox">...</div>
+  <input type="text" id="inputWord" placeholder="So‘zni yozing va Enter bosing" autocomplete="off" />
+  <div id="score">Ball: 0</div>
 
-    <div class="word-container">
-      <div class="word-display" id="wordDisplay">...</div>
-    </div>
-
-    <div class="input-container">
-      <input 
-        type="text" 
-        id="wordInput" 
-        class="word-input" 
-        placeholder="So'zni yozing va Enter bosing"
-        autocomplete="off"
-        disabled
-      />
-    </div>
-
-    <div class="score-container">
-      <div class="score" id="score">🏆 Ball: 0</div>
-    </div>
-
-    <div class="leaderboard">
-      <h3 class="leaderboard-title">🏆 Eng Yaxshi Natijalar</h3>
-      <div id="leaderboardList">
-        <div style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 2rem;">
-          Yuklanmoqda...
-        </div>
-      </div>
-    </div>
+  <div id="leaderboard">
+    <h3>🏆 Reyting</h3>
+    <div id="scores">Yuklanmoqda...</div>
   </div>
 
-  <!-- Delete button -->
-  <button class="delete-btn" onclick="deleteAccount()">
-    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v7h2v-7h-2zm4 0v7h2v-7h-2zm-8 0v7h2v-7H7z"/>
-    </svg>
-    Akkauntni O'chirish
-  </button>
-
-  <!-- Game over modal -->
-  <div class="game-over-modal" id="gameOverModal">
-    <div class="modal-content">
-      <div class="modal-title">🎉 O'yin Tugadi!</div>
-      <div class="modal-score" id="finalScore">0</div>
-      <div class="modal-message" id="modalMessage">Ajoyib natija!</div>
-      <button class="modal-btn" onclick="goHome()">🏠 Bosh Sahifaga</button>
-    </div>
-  </div>
+  <button class="btn delete" onclick="deleteAccount()">🗑 Akkauntni o‘chirish</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -547,108 +232,58 @@
     const db = getDatabase(app);
 
     const user = JSON.parse(localStorage.getItem("sozUser"));
-    if (!user) window.location.href = "register.html";
+    if (!user) window.location.href = "index.html";
 
     let time = parseInt(localStorage.getItem("sozTime") || "10");
-    const wordList = [
-      "olma", "kitob", "telefon", "maktab", "uy", "daraxt", "qush", "oy", "quyosh", "bolajon",
-      "suv", "non", "oila", "do'st", "sevgi", "baxt", "umid", "hayot", "vatan", "ona",
-      "ota", "bola", "qiz", "o'g'il", "aka", "opa", "sinf", "ustoz", "dars", "savol",
-      "javob", "kitob", "qalam", "daftar", "stol", "stul", "deraza", "eshik", "pol", "shift"
-    ];
+    const wordList = ["olma", "kitob", "telefon", "maktab", "uy", "daraxt", "qush", "oy", "quyosh", "bolajon"];
 
     let currentWord = "";
     let score = 0;
-    let gameActive = false;
 
-    const wordDisplay = document.getElementById("wordDisplay");
-    const wordInput = document.getElementById("wordInput");
+    const wordBox = document.getElementById("wordBox");
+    const input = document.getElementById("inputWord");
     const timer = document.getElementById("timer");
-    const scoreElement = document.getElementById("score");
-    const gameOverModal = document.getElementById("gameOverModal");
-    const finalScore = document.getElementById("finalScore");
-    const modalMessage = document.getElementById("modalMessage");
-
-    function getRandomWord() {
-      return wordList[Math.floor(Math.random() * wordList.length)];
-    }
+    const scoreBox = document.getElementById("score");
 
     function newWord() {
-      currentWord = getRandomWord();
-      wordDisplay.textContent = currentWord;
-      wordInput.value = "";
-      wordInput.focus();
+      currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      wordBox.textContent = currentWord;
+      input.value = "";
     }
 
-    function updateScore() {
-      score++;
-      scoreElement.textContent = `🏆 Ball: ${score}`;
-      
-      // Add score animation
-      scoreElement.style.transform = 'scale(1.2)';
-      setTimeout(() => {
-        scoreElement.style.transform = 'scale(1)';
-      }, 200);
-    }
-
-    function checkAnswer() {
-      const userInput = wordInput.value.trim().toLowerCase();
-      const correctAnswer = currentWord.toLowerCase();
-      
-      if (userInput === correctAnswer) {
-        updateScore();
-        wordInput.classList.add('correct');
-        setTimeout(() => {
-          wordInput.classList.remove('correct');
-          newWord();
-        }, 300);
-      } else {
-        wordInput.classList.add('incorrect');
-        setTimeout(() => {
-          wordInput.classList.remove('incorrect');
-          wordInput.value = "";
-        }, 500);
-      }
-    }
-
-    function updateLeaderboard() {
-      const leaderboardList = document.getElementById("leaderboardList");
+    function updateScoreboard() {
+      const scoresDiv = document.getElementById("scores");
       const usersRef = ref(db, "users");
-      
       onValue(usersRef, (snapshot) => {
         const data = snapshot.val();
-        leaderboardList.innerHTML = "";
-        
+        scoresDiv.innerHTML = "";
         if (data) {
           const sorted = Object.values(data).sort((a, b) => b.score - a.score);
-          sorted.slice(0, 10).forEach((u, i) => {
-            const item = document.createElement('div');
-            item.className = 'leaderboard-item';
-            
-            let medal = '';
-            if (i === 0) medal = '🥇';
-            else if (i === 1) medal = '🥈';
-            else if (i === 2) medal = '🥉';
-            else medal = `${i + 1}.`;
-            
-            item.innerHTML = `
-              <span>${medal} ${u.name}</span>
-              <span>${u.score} ball</span>
-            `;
-            leaderboardList.appendChild(item);
+          sorted.forEach((u, i) => {
+            scoresDiv.innerHTML += `<div><strong>${i + 1}.</strong> ${u.name} (${u.phone}) – ${u.score} ball</div>`;
           });
         } else {
-          leaderboardList.innerHTML = '<div style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 1rem;">Hali natijalar yo\'q</div>';
+          scoresDiv.textContent = "Hali foydalanuvchilar yo‘q.";
         }
       });
     }
 
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (input.value.trim().toLowerCase() === currentWord.toLowerCase()) {
+          score++;
+          scoreBox.textContent = "Ball: " + score;
+          newWord();
+        } else {
+          input.value = "";
+        }
+      }
+    });
+
     function endGame() {
-      gameActive = false;
-      wordInput.disabled = true;
-      timer.textContent = "⏰ O'yin tugadi!";
-      
-      // Save score to Firebase
+      timer.textContent = "✅ O'yin tugadi!";
+      input.disabled = true;
+
       const userRef = ref(db, "users/" + user.phone);
       onValue(userRef, (snapshot) => {
         const data = snapshot.val();
@@ -656,78 +291,49 @@
           set(userRef, {
             name: user.name,
             phone: user.phone,
-            score: score,
-            lastPlayed: new Date().toISOString()
+            score
           });
         }
       }, { onlyOnce: true });
 
-      // Show game over modal
-      finalScore.textContent = score;
-      
-      let message = "";
-      if (score >= 20) message = "🔥 Fantastik! Siz haqiqiy so'z ustasisiz!";
-      else if (score >= 15) message = "🌟 Ajoyib natija! Juda yaxshi o'ynadingiz!";
-      else if (score >= 10) message = "👏 Yaxshi natija! Davom eting!";
-      else if (score >= 5) message = "💪 Yomon emas! Mashq qiling!";
-      else message = "🎯 Boshlang'ich natija. Yana harakat qiling!";
-      
-      modalMessage.textContent = message;
-      gameOverModal.classList.add('show');
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3000); // 3 soniyadan keyin bosh sahifaga qaytadi
     }
 
-    function startGame() {
-      gameActive = true;
-      wordInput.disabled = false;
-      newWord();
-      
+    // Start
+    newWord();
+    input.focus();
+    timer.textContent = `⏳ ${time} soniya qoldi`;
+    const interval = setInterval(() => {
+      time--;
       timer.textContent = `⏳ ${time} soniya qoldi`;
-      
-      const interval = setInterval(() => {
-        time--;
-        timer.textContent = `⏳ ${time} soniya qoldi`;
-        
-        if (time <= 10) {
-          timer.classList.add('warning');
-        }
-        
-        if (time <= 0) {
-          clearInterval(interval);
-          endGame();
-        }
-      }, 1000);
-    }
-
-    // Event listeners
-    wordInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && gameActive) {
-        checkAnswer();
+      if (time <= 0) {
+        clearInterval(interval);
+        endGame();
       }
-    });
-
-    // Initialize game
-    updateLeaderboard();
-    
-    // Start game after a short delay
-    setTimeout(() => {
-      startGame();
     }, 1000);
 
-    // Global functions
+    updateScoreboard();
+
     window.deleteAccount = () => {
-      if (confirm("Haqiqatan ham akkauntingizni o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi.")) {
+      if (confirm("Akkauntingizni o‘chirmoqchimisiz?")) {
         const userRef = ref(db, "users/" + user.phone);
         remove(userRef).then(() => {
           localStorage.removeItem("sozUser");
-          alert("Akkaunt muvaffaqiyatli o'chirildi.");
+          alert("Akkaunt o‘chirildi.");
           window.location.href = "register.html";
         });
       }
     };
-
-    window.goHome = () => {
-      window.location.href = "index.html";
-    };
   </script>
+    <style>
+    html, body {
+      scrollbar-width: none !important;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none !important;
+    }
+  </style>
 </body>
-</html>
+</html> 

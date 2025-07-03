@@ -3,40 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WordMaster Pro - Reyting</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>🏆 Reyting - So‘z Topish O‘yini</title>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
   <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-      --silver-gradient: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
-      --bronze-gradient: linear-gradient(135deg, #cd7f32 0%, #d4af37 100%);
-      --glass-bg: rgba(255, 255, 255, 0.25);
-      --glass-border: rgba(255, 255, 255, 0.18);
-      --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
     html, body {
       height: 100%;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      overflow-x: hidden;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      min-height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      background: #f4f7fa;
+      font-family: 'Inter', Arial, sans-serif;
+      color: #23272f;
+      box-sizing: border-box;
     }
 
     body {
@@ -45,516 +27,236 @@
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
-      padding: 2rem;
-      position: relative;
+      background: linear-gradient(120deg, #e0e7ef 0%, #f4f7fa 100%);
+      padding: 56px 0 0 0;
     }
 
-    /* Header */
-    .header {
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #1a2236;
+      letter-spacing: 1.5px;
+      margin-bottom: 36px;
       text-align: center;
-      margin-bottom: 3rem;
-      animation: slideDown 0.8s ease-out;
+      text-shadow: 0 2px 16px #b0c4de30;
     }
 
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .header-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      animation: bounce 2s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-10px); }
-      60% { transform: translateY(-5px); }
-    }
-
-    .header-title {
-      font-size: 3rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .header-subtitle {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 1.2rem;
-      font-weight: 400;
-    }
-
-    /* Leaderboard container */
-    .leaderboard-container {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 30px;
-      padding: 3rem;
-      box-shadow: var(--shadow-soft);
+    #scores {
       width: 100%;
-      max-width: 800px;
-      z-index: 10;
-      position: relative;
-      animation: slideUp 0.8s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Top 3 podium */
-    .podium {
-      display: flex;
-      justify-content: center;
-      align-items: end;
-      gap: 1rem;
-      margin-bottom: 3rem;
-      height: 200px;
-    }
-
-    .podium-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      animation: podiumRise 1s ease-out;
-    }
-
-    @keyframes podiumRise {
-      from {
-        opacity: 0;
-        transform: translateY(100px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .podium-item:nth-child(1) { animation-delay: 0.2s; }
-    .podium-item:nth-child(2) { animation-delay: 0s; }
-    .podium-item:nth-child(3) { animation-delay: 0.4s; }
-
-    .podium-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 800;
-      color: white;
-      margin-bottom: 1rem;
-      position: relative;
-      z-index: 2;
-    }
-
-    .podium-item:nth-child(2) .podium-avatar {
-      background: var(--gold-gradient);
-      width: 100px;
-      height: 100px;
-      font-size: 2.5rem;
-      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-    }
-
-    .podium-item:nth-child(1) .podium-avatar {
-      background: var(--silver-gradient);
-      box-shadow: 0 8px 25px rgba(192, 192, 192, 0.4);
-    }
-
-    .podium-item:nth-child(3) .podium-avatar {
-      background: var(--bronze-gradient);
-      box-shadow: 0 8px 25px rgba(205, 127, 50, 0.4);
-    }
-
-    .podium-name {
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      text-align: center;
-    }
-
-    .podium-score {
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 800;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .podium-base {
-      width: 120px;
-      border-radius: 10px 10px 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 1.5rem;
-    }
-
-    .podium-item:nth-child(2) .podium-base {
-      height: 100px;
-      background: var(--gold-gradient);
-      width: 140px;
-    }
-
-    .podium-item:nth-child(1) .podium-base {
-      height: 80px;
-      background: var(--silver-gradient);
-    }
-
-    .podium-item:nth-child(3) .podium-base {
-      height: 60px;
-      background: var(--bronze-gradient);
-    }
-
-    /* Leaderboard list */
-    .leaderboard-list {
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 1rem;
-    }
-
-    .leaderboard-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 480px;
+      background: #fff;
       border-radius: 20px;
-      transition: all 0.3s ease;
-      animation: listItemSlide 0.5s ease-out;
-    }
-
-    @keyframes listItemSlide {
-      from {
-        opacity: 0;
-        transform: translateX(-50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .leaderboard-item:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateX(10px);
-      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
-    }
-
-    .leaderboard-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .leaderboard-rank {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: white;
-      min-width: 40px;
-      text-align: center;
-    }
-
-    .leaderboard-avatar {
-      width: 50px;
-      height: 50px;
-      background: var(--primary-gradient);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .leaderboard-info {
+      box-shadow: 0 8px 32px #1a223610, 0 1.5px 0 #b0c4de;
+      padding: 40px 32px 32px 32px;
+      margin: 0 auto;
+      min-height: 600px;
+      border: 1.5px solid #e3e8ee;
       display: flex;
       flex-direction: column;
+      align-items: stretch;
     }
 
-    .leaderboard-name {
-      color: white;
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 0.25rem;
+    .score-list {
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #b0c4de #f4f7fa;
     }
 
-    .leaderboard-phone {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.9rem;
+    .score-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .score-list::-webkit-scrollbar-thumb {
+      background: #b0c4de80;
+      border-radius: 6px;
+    }
+    .score-list::-webkit-scrollbar-track {
+      background: #f4f7fa;
     }
 
-    .leaderboard-score {
-      color: white;
-      font-weight: 800;
-      font-size: 1.3rem;
-      background: var(--success-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Back button */
-    .back-btn {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--primary-gradient);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 1.5rem;
-      cursor: pointer;
+    .score-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      z-index: 100;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      gap: 16px;
+      padding: 16px 0 12px 0;
+      border-bottom: 1px solid #e3e8ee;
+      font-size: 1.08rem;
+      font-weight: 500;
+      transition: background 0.18s, box-shadow 0.18s;
+      border-radius: 10px;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .score-item:hover {
+      background: #f4f7fa;
+      box-shadow: 0 2px 12px #b0c4de20;
+    }
+
+    .score-item:nth-child(1) {
+      background: linear-gradient(90deg, #e3e8ee 0%, #c3e0f7 100%);
+      font-size: 1.18rem;
+      color: #1a2236;
+      font-weight: 800;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 2px 16px #c3e0f740;
+    }
+    .score-item:nth-child(1)::before {
+      content: "🏆";
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+    .score-item:nth-child(2) {
+      background: linear-gradient(90deg, #f4f7fa 0%, #e3e8ee 100%);
+      color: #3a506b;
+      font-weight: 700;
+    }
+    .score-item:nth-child(2)::before {
+      content: "🥈";
+      font-size: 1.3em;
+      margin-right: 10px;
+    }
+    .score-item:nth-child(3) {
+      background: linear-gradient(90deg, #f4f7fa 0%, #ffe0b2 100%);
+      color: #ff9800;
+      font-weight: 700;
+    }
+    .score-item:nth-child(3)::before {
+      content: "🥉";
+      font-size: 1.2em;
+      margin-right: 10px;
+    }
+
+    .score-item:last-child {
+      border-bottom: none;
+    }
+
+    .score-item strong {
+      min-width: 32px;
+      display: inline-block;
+      text-align: right;
+      font-size: 1.08em;
+      color: #3a506b;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .back-btn {
+      margin-top: 44px;
+      padding: 13px 36px;
+      font-size: 1.12rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #3a506b 0%, #b0c4de 100%);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 4px 24px #b0c4de40;
+      transition: background 0.18s, transform 0.1s, color 0.18s, box-shadow 0.18s;
+      font-family: 'Inter', Arial, sans-serif;
+      letter-spacing: 1px;
     }
 
     .back-btn:hover {
-      transform: translateY(-3px) scale(1.1);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+      background: linear-gradient(90deg, #b0c4de 0%, #3a506b 100%);
+      color: #1a2236;
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 32px #b0c4de;
     }
 
-    /* Loading state */
-    .loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1rem;
+    ::selection {
+      background: #3a506b;
+      color: #fff;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    .empty-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .empty-message {
-      font-size: 1rem;
-      opacity: 0.8;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
+    @media (max-width: 900px) {
+      #scores {
+        max-width: 98vw;
+        min-height: 70vw;
+        padding: 24px 8px 18px 8px;
+        font-size: 1.02rem;
       }
-
-      .header-title {
-        font-size: 2rem;
+      h1 {
+        font-size: 1.7rem;
       }
-
-      .header-icon {
-        font-size: 3rem;
-      }
-
-      .leaderboard-container {
-        padding: 2rem;
-        border-radius: 20px;
-      }
-
-      .podium {
-        height: 150px;
-        gap: 0.5rem;
-      }
-
-      .podium-avatar {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-      }
-
-      .podium-item:nth-child(2) .podium-avatar {
-        width: 80px;
-        height: 80px;
-        font-size: 2rem;
-      }
-
-      .podium-base {
-        width: 80px;
-      }
-
-      .podium-item:nth-child(2) .podium-base {
-        width: 100px;
-        height: 80px;
-      }
-
-      .podium-item:nth-child(1) .podium-base {
-        height: 60px;
-      }
-
-      .podium-item:nth-child(3) .podium-base {
-        height: 40px;
-      }
-
-      .leaderboard-item {
-        padding: 1rem;
-        border-radius: 15px;
-      }
-
-      .leaderboard-avatar {
-        width: 40px;
-        height: 40px;
+      .back-btn {
+        padding: 10px 18px;
         font-size: 1rem;
       }
+      .score-list {
+        max-height: 60vw;
+      }
+    }
 
+    @media (max-width: 600px) {
+      body {
+        padding: 18px 0 0 0;
+      }
+      #scores {
+        max-width: 100vw;
+        min-height: 90vw;
+        padding: 8vw 2vw 5vw 2vw;
+        font-size: 0.97rem;
+        border-radius: 10px;
+      }
+      h1 {
+        font-size: 1.1rem;
+        margin-bottom: 14px;
+      }
       .back-btn {
-        bottom: 1rem;
-        right: 1rem;
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
+        padding: 8px 12vw;
+        font-size: 0.98rem;
+        margin-top: 18px;
+        border-radius: 8px;
+      }
+      .score-list {
+        max-height: 70vw;
+        padding-right: 2px;
+      }
+      .score-item {
+        font-size: 0.97rem;
+        gap: 8px;
+        padding: 8px 0 6px 0;
+      }
+      .score-item strong {
+        min-width: 20px;
+        font-size: 1em;
       }
     }
 
-    @media (max-width: 480px) {
-      .header-title {
-        font-size: 1.5rem;
+    @media (max-width: 400px) {
+      #scores {
+        padding: 3vw 1vw 2vw 1vw;
+        font-size: 0.91rem;
       }
-
-      .leaderboard-container {
-        padding: 1.5rem;
+      h1 {
+        font-size: 0.98rem;
       }
-
-      .podium {
-        flex-direction: column;
-        height: auto;
-        gap: 1rem;
+      .back-btn {
+        font-size: 0.9rem;
+        padding: 6px 8vw;
       }
-
-      .podium-item {
-        flex-direction: row;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 1rem;
-      }
-
-      .podium-base {
-        display: none;
-      }
-
-      .leaderboard-item {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-      }
-
-      .leaderboard-left {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-    }
-
-    /* Scrollbar */
-    .leaderboard-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .leaderboard-list::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .leaderboard-list::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-    }
-
-    .leaderboard-list::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <div class="header-icon">🏆</div>
-    <h1 class="header-title">Reyting Jadvali</h1>
-    <p class="header-subtitle">Eng yaxshi o'yinchilar</p>
-  </div>
 
-  <!-- Leaderboard container -->
-  <div class="leaderboard-container">
-    <!-- Top 3 podium -->
-    <div class="podium" id="podium" style="display: none;">
-      <!-- Will be populated by JavaScript -->
-    </div>
-
-    <!-- Leaderboard list -->
-    <div class="leaderboard-list" id="leaderboardList">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <div>Reyting yuklanmoqda...</div>
+  <h1>🏆 Kim Kuchli</h1>
+  <div id="scores">
+    <div class="score-list">
+      <div class="loading-container"></div>
+        <div style="border: 4px solid #e0f7fa; border-top: 4px solid #00c853; border-radius: 50%; width: 48px; height: 48px; animation: spin 1s linear infinite;"></div>
+        <div style="margin-top: 16px; color: #00c853; font-weight: 500;">Yuklanmoqda...</div>
       </div>
     </div>
   </div>
-
-  <!-- Back button -->
-  <button class="back-btn" onclick="goBack()">
-    ←
-  </button>
+  <button class="back-btn" onclick="location.href='index.html'" style="position: fixed; bottom: 32px; right: 32px; z-index: 100;">⬅️ Ortga</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -573,89 +275,43 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const podium = document.getElementById("podium");
-    const leaderboardList = document.getElementById("leaderboardList");
+    const scoresDiv = document.querySelector(".score-list");
     const usersRef = ref(db, "users");
-
-    function createPodiumItem(user, position) {
-      const medals = ['🥈', '🥇', '🥉'];
-      const positions = ['2nd', '1st', '3rd'];
-      
-      return `
-        <div class="podium-item">
-          <div class="podium-avatar">${user.name.charAt(0).toUpperCase()}</div>
-          <div class="podium-name">${user.name}</div>
-          <div class="podium-score">${user.score} ball</div>
-          <div class="podium-base">${medals[position]}</div>
-        </div>
-      `;
-    }
-
-    function createLeaderboardItem(user, index) {
-      const rank = index + 1;
-      let rankDisplay = rank;
-      
-      if (rank === 1) rankDisplay = '🥇';
-      else if (rank === 2) rankDisplay = '🥈';
-      else if (rank === 3) rankDisplay = '🥉';
-      else rankDisplay = `${rank}.`;
-
-      return `
-        <div class="leaderboard-item" style="animation-delay: ${index * 0.1}s">
-          <div class="leaderboard-left">
-            <div class="leaderboard-rank">${rankDisplay}</div>
-            <div class="leaderboard-avatar">${user.name.charAt(0).toUpperCase()}</div>
-            <div class="leaderboard-info">
-              <div class="leaderboard-name">${user.name}</div>
-              <div class="leaderboard-phone">+998 ${user.phone}</div>
-            </div>
-          </div>
-          <div class="leaderboard-score">${user.score}</div>
-        </div>
-      `;
-    }
 
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
-      
+      scoresDiv.innerHTML = "";
       if (data) {
-        const users = Object.values(data).sort((a, b) => b.score - a.score);
-        
-        // Show podium for top 3
-        if (users.length >= 3) {
-          podium.style.display = 'flex';
-          podium.innerHTML = '';
-          
-          // Order: 2nd, 1st, 3rd for visual podium effect
-          const podiumOrder = [users[1], users[0], users[2]];
-          podiumOrder.forEach((user, index) => {
-            if (user) {
-              podium.innerHTML += createPodiumItem(user, index);
-            }
-          });
-        }
-        
-        // Show full leaderboard
-        leaderboardList.innerHTML = '';
-        users.forEach((user, index) => {
-          leaderboardList.innerHTML += createLeaderboardItem(user, index);
+        const sorted = Object.values(data).sort((a, b) => b.score - a.score);
+        sorted.forEach((u, i) => {
+          scoresDiv.innerHTML += `
+            <div class="score-item">
+              <strong>${i + 1}.</strong> ${u.name} – ${u.score} ball
+            </div>`;
         });
-        
       } else {
-        podium.style.display = 'none';
-        leaderboardList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">🎯</div>
-            <div class="empty-title">Hali natijalar yo'q</div>
-            <div class="empty-message">Birinchi bo'lib o'ynang va reyting jadvalida o'z ismingizni ko'ring!</div>
-          </div>
-        `;
+        scoresDiv.textContent = "Hech kim hali o‘ynamagan.";
       }
     });
-
-    window.goBack = () => {
-      window.location.href = "index.html";
-    };
   </script>
+  <style>
+    html, body {
+      scrollbar-width: none !important;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none !important;
+    }
+  </style>
+  <style>
+    html, body {
+      overflow: hidden !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      position: fixed !important;
+      overscroll-behavior: none !important;
+      touch-action: none !important;
+    }
+  </style>
+
 </body>
 </html>
