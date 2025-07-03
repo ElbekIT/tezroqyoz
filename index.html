@@ -3,366 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bosh Sahifa</title>
+  <title>So‘z topish o‘yini</title>
   <style>
-    /* Modern Pro UI Design - Fully Responsive for Phones */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     html, body {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
-      color: #222b45;
-      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
+      scrollbar-width: none !important;
     }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 32px;
-      position: relative;
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none !important;
     }
     .topbar {
-      position: absolute;
-      top: 28px;
-      right: 44px;
-      background: #fff;
-      border: none;
-      box-shadow: 0 2px 16px #b6c6e033;
-      padding: 13px 32px;
-      border-radius: 18px;
-      font-weight: 600;
-      color: #3b4a6b;
-      letter-spacing: 0.5px;
-      font-size: 1.08rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 10;
-      user-select: none;
+      padding: 10px;
+      background-color: #f0f0f0;
+      font-weight: bold;
     }
-    h1 {
-      color: #2e3a59;
-      font-size: 2.6rem;
-      margin-bottom: 18px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-shadow: 0 2px 12px #e0e7ef;
-      text-align: center;
-      word-break: break-word;
-    }
-    p {
-      font-size: 1.15rem;
-      margin-bottom: 30px;
-      color: #4a5876;
-      max-width: 540px;
-      background: #f5f7fa;
-      border-left: 5px solid #5b9df9;
-      border-radius: 12px;
-      padding: 18px 22px;
-      box-shadow: 0 2px 18px #b6c6e022;
-      font-family: 'Inter', Arial, sans-serif;
-      text-align: center;
-      word-break: break-word;
-    }
-    label {
-      font-size: 1.07rem;
-      color: #3b4a6b;
-      font-weight: 600;
-      margin-bottom: 10px;
-      display: inline-block;
-      letter-spacing: 0.5px;
-    }
-    select {
-      padding: 12px 26px;
-      border-radius: 10px;
-      border: 1.5px solid #5b9df9;
-      font-size: 1.04rem;
-      background: #f5f7fa;
-      color: #2e3a59;
-      margin-top: 10px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 8px #b6c6e022;
-      outline: none;
-      transition: border 0.2s, box-shadow 0.2s;
-      width: 100%;
-      max-width: 260px;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-    select:focus {
-      border-color: #2e7cf6;
-      box-shadow: 0 0 0 2px #5b9df944;
-    }
-    .btn {
-      padding: 15px 36px;
-      margin: 10px;
-      font-size: 1.07rem;
-      border: none;
-      border-radius: 14px;
-      color: #fff;
-      background: linear-gradient(90deg, #5b9df9 0%, #2e7cf6 100%);
-      cursor: pointer;
-      box-shadow: 0 4px 18px #b6c6e033, 0 0 0 2px #e0e7ef inset;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      transition: background 0.18s, color 0.18s, transform 0.1s, box-shadow 0.18s;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      min-width: 120px;
-      user-select: none;
-    }
-    .btn::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255,255,255,0.18);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.3s, height 0.3s;
-      z-index: 0;
-    }
-    .btn:hover::before {
-      width: 250%;
-      height: 700%;
-    }
-    .btn:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 8px #b6c6e022;
-    }
-    .start {
-      background: linear-gradient(90deg, #5b9df9 0%, #2e7cf6 100%);
-      color: #fff;
-    }
-    .start:hover {
-      background: linear-gradient(90deg, #2e7cf6 0%, #5b9df9 100%);
-      box-shadow: 0 0 16px #5b9df999;
-    }
-    .reyting {
-      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
-      color: #fff;
-    }
-    .reyting:hover {
-      background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
-      box-shadow: 0 0 16px #38f9d799;
-    }
-    .delete {
-      background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 100%);
-      color: #fff;
-    }
-    .delete:hover {
-      background: linear-gradient(90deg, #ffc371 0%, #ff5f6d 100%);
-      box-shadow: 0 0 16px #ff5f6d66;
-    }
-    ::-webkit-scrollbar {
-      width: 8px;
-      background: #e0e7ef;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #5b9df9;
-      border-radius: 8px;
-    }
-
-    /* like */
     .like-container {
-      margin-top: 40px;
-      text-align: center;
-      font-family: 'Montserrat', sans-serif;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 4px 32px #b6c6e033;
-      padding: 28px 18px 18px 18px;
-      max-width: 420px;
-      margin-left: auto;
-      margin-right: auto;
-      border: 1.5px solid #e0e7ef;
-      width: 100%;
+      margin-top: 20px;
     }
-    .vote-buttons {
-      margin-bottom: 18px;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-    .like-btn, .dislike-btn {
-      font-size: 48px;
-      background: linear-gradient(135deg, #e0e7ef 0%, #f8fafc 100%);
-      border: 2.5px solid #e0e7ef;
-      border-radius: 50%;
+    .vote-buttons button {
+      font-size: 24px;
+      margin: 0 5px;
       cursor: pointer;
-      margin: 0 12px;
-      transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
-      box-shadow: 0 2px 12px #b6c6e022;
-      width: 70px;
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      outline: none;
-      user-select: none;
-      touch-action: manipulation;
-    }
-    .like-btn:hover, .dislike-btn:hover {
-      transform: scale(1.15) rotate(-6deg);
-      box-shadow: 0 6px 24px #b6c6e044;
-      border: 2.5px solid #5b9df9;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e0e7ef 100%);
-    }
-    .like-btn:active, .dislike-btn:active {
-      transform: scale(1.05) rotate(2deg);
     }
     .vote-stats {
       display: flex;
-      justify-content: center;
-      gap: 40px;
+      gap: 20px;
       margin-top: 10px;
-      flex-wrap: wrap;
     }
     .stat {
       width: 120px;
-      background: #f5f7fa;
-      border-radius: 12px;
-      padding: 12px 10px 10px 10px;
-      box-shadow: 0 2px 8px #b6c6e011;
-      margin: 0 4px;
     }
     .bar {
-      height: 14px;
-      background: #e0e7ef;
-      border-radius: 7px;
-      margin: 8px 0;
+      height: 10px;
+      background: #eee;
+      border-radius: 5px;
       overflow: hidden;
-      box-shadow: 0 1px 4px #b6c6e011;
+      margin: 5px 0;
     }
     .fill {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s;
+      height: 10px;
     }
     .fill.like {
-      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+      background: #4caf50;
     }
     .fill.dislike {
-      background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 100%);
+      background: #f44336;
     }
-    #likeCount, #dislikeCount {
-      font-weight: bold;
-      color: #333;
-      margin-top: 4px;
-      font-size: 1.15rem;
-      letter-spacing: 0.5px;
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
     }
-    #likePercent, #dislikePercent {
-      font-size: 14px;
-      color: #555;
-      margin-top: 2px;
+    .btn.reyting {
+      background: #2196f3;
+      color: #fff;
+      border: none;
     }
-
-    /* Responsive styles */
-    @media (max-width: 900px) {
-      .topbar {
-      right: 16px;
-      top: 16px;
-      padding: 10px 18px;
-      font-size: 1rem;
-      }
-      .like-container {
-      max-width: 95vw;
-      padding: 18px 4vw 14px 4vw;
-      }
-      .stat {
-      width: 100px;
-      padding: 10px 4px 8px 4px;
-      }
-      .btn {
-      padding: 12px 20px;
-      font-size: 1rem;
-      }
-    }
-    @media (max-width: 600px) {
-      body {
-      padding: 8vw 2vw 10vw 2vw;
-      min-height: 100vh;
-      }
-      .topbar {
-      right: 8px;
-      top: 8px;
-      padding: 8px 12px;
-      font-size: 0.93rem;
-      }
-      h1 {
-      font-size: 1.4rem;
-      margin-bottom: 12px;
-      }
-      p {
-      font-size: 0.98rem;
-      padding: 10px 4px;
-      margin-bottom: 18px;
-      }
-      .btn {
-      padding: 11px 16px;
-      font-size: 0.97rem;
-      margin: 6px;
-      min-width: 90px;
-      }
-      .like-container {
-      margin-top: 24px;
-      padding: 12px 2vw 10px 2vw;
-      max-width: 99vw;
-      }
-      .vote-stats {
-      flex-direction: column;
-      gap: 18px;
-      }
-      .stat {
-      width: 100%;
-      margin: 0 0 8px 0;
-      padding: 8px 2px 6px 2px;
-      }
-      .vote-buttons {
-      gap: 12px;
-      }
-      .like-btn, .dislike-btn {
-      font-size: 32px;
-      width: 48px;
-      height: 48px;
-      margin: 0 4px;
-      }
-    }
-    @media (max-width: 400px) {
-      .topbar {
-      font-size: 0.85rem;
-      padding: 6px 8px;
-      }
-      h1 {
-      font-size: 1.05rem;
-      }
-      .btn {
-      font-size: 0.89rem;
-      padding: 8px 8px;
-      }
-      .like-btn, .dislike-btn {
-      font-size: 22px;
-      width: 32px;
-      height: 32px;
-      }
-    }
-    /* Make sure all elements are touch-friendly */
-    button, select, .like-btn, .dislike-btn {
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+    .btn.start {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -371,7 +72,7 @@
   <div class="topbar" id="usernameBox">👤 Foydalanuvchi</div>
 
   <h1>👋 Assalomu alaykum!</h1>
-  <p>Bu sayt o</div>rqali siz tanlagan vaqt ichida qancha o‘zbekcha so‘z topa olishingizni sinab ko‘rishingiz mumkin!</p>
+  <p>Bu sayt orqali siz tanlagan vaqt ichida qancha o‘zbekcha so‘z topa olishingizni sinab ko‘rishingiz mumkin!</p>
 
   <label for="duration">⏱ O‘yin davomiyligini tanlang (soniya):</label><br>
   <select id="duration">
@@ -380,32 +81,34 @@
     <option value="30">30 soniya</option>
     <option value="60">60 soniya</option>
   </select>
-<div class="like-container">
-  <div class="vote-buttons">
-    <button class="like-btn" onclick="handleVote('like')">👍</button>
-    <button class="dislike-btn" onclick="handleVote('dislike')">👎</button>
-  </div>
 
-  <div class="vote-stats">
-    <div class="stat">
-      <div id="likeCount">👍 0</div>
-      <div class="bar"><div id="likeFill" class="fill like"></div></div>
-      <div id="likePercent">0%</div>
+  <div class="like-container">
+    <div class="vote-buttons">
+      <button class="like-btn" onclick="handleVote('like')">👍</button>
+      <button class="dislike-btn" onclick="handleVote('dislike')">👎</button>
     </div>
 
-    <div class="stat">
-      <div id="dislikeCount">👎 0</div>
-      <div class="bar"><div id="dislikeFill" class="fill dislike"></div></div>
-      <div id="dislikePercent">0%</div>
+    <div class="vote-stats">
+      <div class="stat">
+        <div id="likeCount">👍 0</div>
+        <div class="bar"><div id="likeFill" class="fill like"></div></div>
+        <div id="likePercent">0%</div>
+      </div>
+
+      <div class="stat">
+        <div id="dislikeCount">👎 0</div>
+        <div class="bar"><div id="dislikeFill" class="fill dislike"></div></div>
+        <div id="dislikePercent">0%</div>
+      </div>
     </div>
   </div>
-</div>
+
   <br><br>
   <button class="btn start" onclick="startGame()">🚀 Boshlash</button>
   <button class="btn reyting" onclick="location.href='reyting.html'">🏆 Reyting</button>
+
   <div style="position: fixed; bottom: 18px; left: 18px;">
     <button onclick="deleteAccount()" style="display: flex; align-items: center; gap: 6px; background: #ff5f6d; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 1rem; cursor: pointer;">
-      <!-- Savatcha (delete/trash) ikonkasi -->
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff" viewBox="0 0 24 24">
         <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v7h2v-7h-2zm4 0v7h2v-7h-2zm-8 0v7h2v-7H7z"/>
       </svg>
@@ -413,96 +116,79 @@
     </button>
   </div>
 
+  <!-- Firebase JS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCR8QE6UHlS8qqp7UIqCxyiXto_xlB0xyI",
+      authDomain: "tezroqyoz.firebaseapp.com",
+      databaseURL: "https://tezroqyoz-default-rtdb.firebaseio.com",
+      projectId: "tezroqyoz",
+      storageBucket: "tezroqyoz.appspot.com",
+      messagingSenderId: "562891786916",
+      appId: "1:562891786916:web:8372d94bf2128fcc127431",
+      measurementId: "G-C3F6970S7T"
+    };
 
-  // Firebase konfiguratsiyasi
-  const firebaseConfig = {
-    apiKey: "AIzaSyB1KIzGCvifH-lzNzOtY0F__AL6PU7_B_Y",
-    authDomain: "elbekproductions.firebaseapp.com",
-    databaseURL: "https://elbekproductions-default-rtdb.firebaseio.com",
-    projectId: "elbekproductions",
-    storageBucket: "elbekproductions.appspot.com",
-    messagingSenderId: "467619718063",
-    appId: "1:467619718063:web:f370881cffbb396899c55a"
-  };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  // Firebase ilovasini ishga tushirish
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    const likeRef = ref(db, "globalVotes/like");
+    const dislikeRef = ref(db, "globalVotes/dislike");
 
-  // Global ovozlar uchun referenslar
-  const likeRef = ref(db, "globalVotes/like");
-  const dislikeRef = ref(db, "globalVotes/dislike");
-
-  // Ovoz berish funksiyasi
-  window.handleVote = function(type) {
-    const refToUpdate = type === 'like' ? likeRef : dislikeRef;
-    runTransaction(refToUpdate, (current) => (current || 0) + 1);
-  }
-
-  // UI yangilash funksiyasi
-  function updateUI(likes, dislikes) {
-    const total = likes + dislikes || 1;
-    const likePercent = ((likes / total) * 100).toFixed(1);
-    const dislikePercent = ((dislikes / total) * 100).toFixed(1);
-
-    document.getElementById("likeCount").textContent = `👍 ${likes}`;
-    document.getElementById("dislikeCount").textContent = `👎 ${dislikes}`;
-    document.getElementById("likeFill").style.width = likePercent + "%";
-    document.getElementById("dislikeFill").style.width = dislikePercent + "%";
-    document.getElementById("likePercent").textContent = likePercent + "%";
-    document.getElementById("dislikePercent").textContent = dislikePercent + "%";
-  }
-
-  // Real-time listenerlar
-  let likeCount = 0;
-  let dislikeCount = 0;
-
-  onValue(likeRef, (snap) => {
-    likeCount = snap.val() || 0;
-    updateUI(likeCount, dislikeCount);
-  });
-  onValue(dislikeRef, (snap) => {
-    dislikeCount = snap.val() || 0;
-    updateUI(likeCount, dislikeCount);
-  });
-</script>
-
-<script>
-  // Foydalanuvchi ma'lumotini olish va tekshirish
-  const user = JSON.parse(localStorage.getItem("sozUser"));
-  if (!user) window.location.href = "register.html";
-
-  // Foydalanuvchi ismini chiqarish
-  document.getElementById("usernameBox").textContent = `👤 ${user.name}`;
-
-  // O'yinni boshlash funksiyasi
-  function startGame() {
-    const selectedTime = document.getElementById("duration").value;
-    localStorage.setItem("sozTime", selectedTime);
-    window.location.href = "oyin.html";
-  }
-
-  // Akkauntni o'chirish funksiyasi
-  function deleteAccount() {
-    if (confirm("Akkauntingizni o‘chirmoqchimisiz?")) {
-      localStorage.removeItem("sozUser");
-      alert("Akkaunt o‘chirildi.");
-      window.location.href = "register.html";
+    window.handleVote = function(type) {
+      const refToUpdate = type === 'like' ? likeRef : dislikeRef;
+      runTransaction(refToUpdate, (current) => (current || 0) + 1);
     }
-  }
-</script>
 
-<style>
-  html, body {
-    scrollbar-width: none !important;
-  }
-  html::-webkit-scrollbar, body::-webkit-scrollbar {
-    display: none !important;
-  }
-</style>
+    function updateUI(likes, dislikes) {
+      const total = likes + dislikes || 1;
+      const likePercent = ((likes / total) * 100).toFixed(1);
+      const dislikePercent = ((dislikes / total) * 100).toFixed(1);
+
+      document.getElementById("likeCount").textContent = `👍 ${likes}`;
+      document.getElementById("dislikeCount").textContent = `👎 ${dislikes}`;
+      document.getElementById("likeFill").style.width = likePercent + "%";
+      document.getElementById("dislikeFill").style.width = dislikePercent + "%";
+      document.getElementById("likePercent").textContent = likePercent + "%";
+      document.getElementById("dislikePercent").textContent = dislikePercent + "%";
+    }
+
+    let likeCount = 0;
+    let dislikeCount = 0;
+
+    onValue(likeRef, (snap) => {
+      likeCount = snap.val() || 0;
+      updateUI(likeCount, dislikeCount);
+    });
+    onValue(dislikeRef, (snap) => {
+      dislikeCount = snap.val() || 0;
+      updateUI(likeCount, dislikeCount);
+    });
+  </script>
+
+  <!-- LocalStorage bilan ishlash -->
+  <script>
+    const user = JSON.parse(localStorage.getItem("sozUser"));
+    if (!user) window.location.href = "register.html";
+
+    document.getElementById("usernameBox").textContent = `👤 ${user.name}`;
+
+    function startGame() {
+      const selectedTime = document.getElementById("duration").value;
+      localStorage.setItem("sozTime", selectedTime);
+      window.location.href = "oyin.html";
+    }
+
+    function deleteAccount() {
+      if (confirm("Akkauntingizni o‘chirmoqchimisiz?")) {
+        localStorage.removeItem("sozUser");
+        alert("Akkaunt o‘chirildi.");
+        window.location.href = "register.html";
+      }
+    }
+  </script>
 </body>
 </html>
