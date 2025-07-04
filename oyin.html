@@ -3,150 +3,793 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>O'yin - So‘z Topish</title>
+  <title>O'yin - Tez Roq Yoz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
   <style>
-    /* [STYLES - qisqartirilmasdan qo‘shilgan] */
-    html, body {
-      scrollbar-width: none !important;
-    }
-    html::-webkit-scrollbar, body::-webkit-scrollbar {
-      display: none !important;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* Shu yerga sizning avvalgi styles bo‘limi to‘liq joylashtirilgan */
-    /* Hamma style'lar siz yuborgan holda qoldirildi (scrollbar, responsiveness, input, wordBox, timer, score, btn, leaderboard va boshqalar) */
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="20" cy="20" r="2" fill="url(%23a)"><animate attributeName="cy" values="20;80;20" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="80" r="2" fill="url(%23a)"><animate attributeName="cy" values="80;20;80" dur="4s" repeatCount="indefinite"/></circle><circle cx="40" cy="60" r="1.5" fill="url(%23a)"><animate attributeName="cy" values="60;10;60" dur="2.5s" repeatCount="indefinite"/></circle></svg>') repeat;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Game Container */
+    .game-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(45deg, #fff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Game Stats */
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #timer.warning {
+      color: #ff6b6b;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Word Display */
+    .word-display {
+      background: linear-gradient(45deg, #ff6b6b, #ffa500);
+      border-radius: 25px;
+      padding: 30px;
+      margin: 30px 0;
+      box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .word-display::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shine 3s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+      100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    }
+
+    #wordBox {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      letter-spacing: 3px;
+      position: relative;
+      z-index: 1;
+      animation: wordPop 0.5s ease-out;
+    }
+
+    @keyframes wordPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Input Section */
+    .input-section {
+      margin-bottom: 30px;
+    }
+
+    #inputWord {
+      width: 100%;
+      padding: 20px 25px;
+      border: none;
+      border-radius: 20px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      letter-spacing: 2px;
+    }
+
+    #inputWord:focus {
+      background: white;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    #inputWord.correct {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      color: white;
+      animation: correctAnswer 0.5s ease-out;
+    }
+
+    #inputWord.incorrect {
+      background: linear-gradient(45deg, #ff6b6b, #ffa500);
+      color: white;
+      animation: shake 0.5s ease-out;
+    }
+
+    @keyframes correctAnswer {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      border-radius: 10px;
+      transition: width 1s linear;
+      box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+    }
+
+    /* Leaderboard */
+    .leaderboard {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 25px;
+      margin-top: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .leaderboard h3 {
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-weight: 500;
+    }
+
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+
+    .leaderboard-rank {
+      width: 30px;
+      font-weight: 700;
+      color: #ffa500;
+    }
+
+    .leaderboard-name {
+      flex: 1;
+      text-align: left;
+    }
+
+    .leaderboard-score {
+      font-weight: 700;
+      color: #4ecdc4;
+    }
+
+    /* Game Over Screen */
+    .game-over {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-over-content {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      animation: gameOverPop 0.5s ease-out;
+    }
+
+    @keyframes gameOverPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .game-over h2 {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .final-score {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #ffa500;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 15px rgba(255, 165, 0, 0.5);
+    }
+
+    /* Delete Button */
+    .delete-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(45deg, #ff4757, #ff3838);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(255, 71, 87, 0.3);
+    }
+
+    .delete-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(255, 71, 87, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 25px;
+        margin: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .game-stats {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      #wordBox {
+        font-size: 2rem;
+      }
+
+      #inputWord {
+        font-size: 1.1rem;
+        padding: 15px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      #wordBox {
+        font-size: 1.8rem;
+      }
+
+      .delete-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 8px 15px;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Hide scrollbar */
+    html, body {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none;
+    }
+
+    .leaderboard::-webkit-scrollbar {
+      width: 4px;
+    }
+    .leaderboard::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
   </style>
 </head>
 <body>
-  <h1>🧠 So‘z Topish O‘yini</h1>
-  <div id="timer">⏳ O'yin boshlanmoqda...</div>
-  <div id="wordBox">...</div>
-  <input type="text" id="inputWord" placeholder="So‘zni yozing va Enter bosing" autocomplete="off" />
-  <div id="score">Ball: 0</div>
+  <div class="bg-animation"></div>
 
-  <div id="leaderboard">
-    <h3>🏆 Reyting</h3>
-    <div id="scores">Yuklanmoqda...</div>
+  <div class="game-container">
+    <h1>🧠 Tez Roq Yoz</h1>
+    
+    <div class="game-stats">
+      <div class="stat-card">
+        <div class="stat-label">⏱ Vaqt</div>
+        <div class="stat-value" id="timer">30</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">🎯 Ball</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">🔥 Ketma-ketlik</div>
+        <div class="stat-value" id="streak">0</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="word-display">
+      <div id="wordBox">Boshlash uchun tayyor...</div>
+    </div>
+
+    <div class="input-section">
+      <input type="text" id="inputWord" placeholder="So'zni yozing va Enter bosing" autocomplete="off" />
+    </div>
+
+    <div class="leaderboard">
+      <h3>🏆 Eng Yaxshi Natijalar</h3>
+      <div id="scores">Yuklanmoqda...</div>
+    </div>
   </div>
 
-  <button class="btn delete" onclick="deleteAccount()">🗑 Akkauntni o‘chirish</button>
+  <div class="game-over" id="gameOver">
+    <div class="game-over-content">
+      <h2>🎉 O'yin Tugadi!</h2>
+      <div class="final-score" id="finalScore">0</div>
+      <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+        Ajoyib natija! Yana bir bor urinib ko'ring.
+      </p>
+      <button class="btn btn-primary" onclick="restartGame()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); border: none; padding: 15px 30px; border-radius: 25px; color: white; font-weight: 600; cursor: pointer;">
+        🔄 Qayta O'ynash
+      </button>
+    </div>
+  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  <button class="delete-btn" onclick="deleteAccount()">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6a.5.5 0 0 0-.5-.5z"/>
+      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+    </svg>
+    O'chirish
+  </button>
 
-    // ✅ Yangilangan Firebase konfiguratsiyasi
-    const firebaseConfig = {
-      apiKey: "AIzaSyCR8QE6UHlS8qqp7UIqCxyiXto_xlB0xyI",
-      authDomain: "tezroqyoz.firebaseapp.com",
-      projectId: "tezroqyoz",
-      storageBucket: "tezroqyoz.appspot.com",
-      messagingSenderId: "562891786916",
-      appId: "1:562891786916:web:8372d94bf2128fcc127431",
-      measurementId: "G-C3F6970S7T"
-    };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyCR8QE6UHlS8qqp7UIqCxyiXto_xlB0xyI",
+    authDomain: "tezroqyoz.firebaseapp.com",
+    databaseURL: "https://tezroqyoz-default-rtdb.firebaseio.com",
+    projectId: "tezroqyoz",
+    storageBucket: "tezroqyoz.firebasestorage.app",
+    messagingSenderId: "562891786916",
+    appId: "1:562891786916:web:8372d94bf2128fcc127431",
+    measurementId: "G-C3F6970S7T"
+  };
 
-    // ⛔ Foydalanuvchi tekshiruvi
-    const user = JSON.parse(localStorage.getItem("sozUser"));
-    if (!user) window.location.href = "register.html";
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    let time = parseInt(localStorage.getItem("sozTime") || "10");
-    const wordList = ["olma", "kitob", "telefon", "maktab", "uy", "daraxt", "qush", "oy", "quyosh", "bolajon"];
-    let currentWord = "";
-    let score = 0;
+  const user = JSON.parse(localStorage.getItem("sozUser"));
+  if (!user) window.location.href = "index.html";
 
-    const wordBox = document.getElementById("wordBox");
-    const input = document.getElementById("inputWord");
-    const timer = document.getElementById("timer");
-    const scoreBox = document.getElementById("score");
+  let time = parseInt(localStorage.getItem("sozTime") || "30");
+  const difficulty = localStorage.getItem("sozDifficulty") || "medium";
+  
+  // Professional Uzbek word lists by difficulty - much more comprehensive
+  const wordLists = {
+    easy: [
+      // Basic everyday words
+      "olma", "nok", "uzum", "shaftoli", "gilos", "qovun", "tarvuz", "banan",
+      "kitob", "qalam", "daftar", "stol", "stul", "deraza", "eshik", "kalit",
+      "uy", "xona", "oshxona", "hammom", "yotoqxona", "bog'", "hovli", "ko'cha",
+      "oy", "quyosh", "yulduz", "bulut", "yomg'ir", "qor", "shamol", "issiq",
+      "suv", "choy", "qahva", "non", "guruch", "makaron", "go'sht", "baliq",
+      "bola", "qiz", "ona", "ota", "aka", "opa", "uka", "singil",
+      "it", "mushuk", "ot", "sigir", "qo'y", "tovuq", "parranda", "baliq",
+      "qizil", "ko'k", "sariq", "yashil", "oq", "qora", "jigarrang", "pushti",
+      "bir", "ikki", "uch", "to'rt", "besh", "olti", "yetti", "sakkiz"
+    ],
+    medium: [
+      // Intermediate words
+      "telefon", "kompyuter", "televizor", "muzlatgich", "kir yuvish mashinasi",
+      "maktab", "universitet", "kutubxona", "shifoxona", "dorixona", "bozor",
+      "daraxt", "gul", "barg", "meva", "sabzavot", "don", "urug'", "ildiz",
+      "qush", "hasharot", "kapalak", "chumoli", "ari", "chivin", "pashshacha",
+      "mashina", "avtobus", "poyezd", "samolyot", "kema", "velosiped", "mototsikl",
+      "dastur", "internet", "sayt", "elektron pochta", "parol", "fayl", "papka",
+      "futbol", "basketbol", "tennis", "suzish", "yugurish", "sakrash", "kurash",
+      "musiqa", "qo'shiq", "raqs", "teatr", "kino", "konsert", "festival",
+      "ish", "kasb", "maosh", "bozor", "savdo", "xarid", "pul", "karta",
+      "sog'liq", "kasallik", "dori", "shifokor", "hamshira", "operatsiya",
+      "ta'lim", "dars", "imtihon", "baho", "diplom", "sertifikat", "kurs"
+    ],
+    hard: [
+      // Advanced and complex words
+      "universitet", "matematika", "fizika", "kimyo", "biologiya", "geografiya",
+      "tarix", "adabiyot", "falsafa", "psixologiya", "sotsiologiya", "iqtisod",
+      "astronomiya", "geologiya", "ekologiya", "antropologiya", "arxeologiya",
+      "demokratiya", "respublika", "konstitutsiya", "parlament", "prezident",
+      "texnologiya", "innovatsiya", "raqamlashtirish", "sun'iy intellekt",
+      "biotexnologiya", "nanotexnologiya", "robototexnika", "kiberxavfsizlik",
+      "globallashuv", "urbanizatsiya", "industrializatsiya", "modernizatsiya",
+      "transformatsiya", "integratsiya", "diversifikatsiya", "optimallashtirish",
+      "eksperiment", "tadqiqot", "metodologiya", "statistika", "analitika",
+      "infrastruktura", "arxitektura", "muhandislik", "loyihalash", "qurilish",
+      "ekosistema", "biodiversitet", "iqlim o'zgarishi", "barqarorlik",
+      "qayta tiklanuvchi energiya", "fotosintez", "evolyutsiya", "genetika",
+      "mikroorganizm", "antibiotik", "vaktsina", "immunitet", "metabolizm",
+      "neyron", "sinaps", "gormon", "ferment", "protein", "DNK", "RNK"
+    ]
+  };
 
-    function newWord() {
-      currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-      wordBox.textContent = currentWord;
-      input.value = "";
+  const wordList = wordLists[difficulty];
+  let currentWord = "";
+  let score = 0;
+  let streak = 0;
+  let maxStreak = 0;
+  let gameActive = false;
+  let usedWords = new Set(); // Track used words to avoid repetition
+
+  const wordBox = document.getElementById("wordBox");
+  const input = document.getElementById("inputWord");
+  const timer = document.getElementById("timer");
+  const scoreBox = document.getElementById("score");
+  const streakBox = document.getElementById("streak");
+  const progressBar = document.getElementById("progressBar");
+
+  function getRandomWord() {
+    // If all words have been used, reset the set
+    if (usedWords.size >= wordList.length) {
+      usedWords.clear();
     }
+    
+    let randomWord;
+    do {
+      randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+    } while (usedWords.has(randomWord));
+    
+    usedWords.add(randomWord);
+    return randomWord;
+  }
 
-    function updateScoreboard() {
-      const scoresDiv = document.getElementById("scores");
-      const usersRef = ref(db, "users");
-      onValue(usersRef, (snapshot) => {
-        const data = snapshot.val();
-        scoresDiv.innerHTML = "";
-        if (data) {
-          const sorted = Object.values(data).sort((a, b) => b.score - a.score);
-          sorted.forEach((u, i) => {
-            scoresDiv.innerHTML += `<div><strong>${i + 1}.</strong> ${u.name} (${u.phone}) – ${u.score} ball</div>`;
-          });
-        } else {
-          scoresDiv.textContent = "Hali foydalanuvchilar yo‘q.";
-        }
-      });
-    }
+  function newWord() {
+    currentWord = getRandomWord();
+    wordBox.textContent = currentWord;
+    input.value = "";
+    input.focus();
+    
+    // Reset input styling
+    input.className = "";
+  }
 
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        if (input.value.trim().toLowerCase() === currentWord.toLowerCase()) {
-          score++;
-          scoreBox.textContent = "Ball: " + score;
-          newWord();
-        } else {
-          input.value = "";
-        }
+  function updateScoreboard() {
+    const scoresDiv = document.getElementById("scores");
+    const usersRef = ref(db, "users");
+    onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      scoresDiv.innerHTML = "";
+      if (data) {
+        const sorted = Object.values(data).sort((a, b) => b.score - a.score).slice(0, 10);
+        sorted.forEach((u, i) => {
+          const item = document.createElement('div');
+          item.className = 'leaderboard-item';
+          item.innerHTML = `
+            <div class="leaderboard-rank">${i + 1}.</div>
+            <div class="leaderboard-name">${u.name}</div>
+            <div class="leaderboard-score">${u.score}</div>
+          `;
+          scoresDiv.appendChild(item);
+        });
+      } else {
+        scoresDiv.innerHTML = '<div style="color: rgba(255,255,255,0.6); text-align: center;">Hali natijalar yo\'q</div>';
       }
     });
+  }
 
-    function endGame() {
-      timer.textContent = "✅ O'yin tugadi!";
-      input.disabled = true;
+  function updateProgress() {
+    const totalTime = parseInt(localStorage.getItem("sozTime") || "30");
+    const progress = ((totalTime - time) / totalTime) * 100;
+    progressBar.style.width = progress + "%";
+  }
 
-      const userRef = ref(db, "users/" + user.phone);
-      onValue(userRef, (snapshot) => {
-        const data = snapshot.val();
-        if (!data || score > data.score) {
-          set(userRef, {
-            name: user.name,
-            phone: user.phone,
-            score
-          });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && gameActive) {
+      const userInput = input.value.trim().toLowerCase();
+      const correctAnswer = currentWord.toLowerCase();
+      
+      if (userInput === correctAnswer) {
+        score++;
+        streak++;
+        maxStreak = Math.max(maxStreak, streak);
+        
+        scoreBox.textContent = score;
+        streakBox.textContent = streak;
+        
+        // Success feedback
+        input.classList.add('correct');
+        setTimeout(() => input.classList.remove('correct'), 500);
+        
+        // Add bonus time for correct answers (streak bonus)
+        if (streak >= 3 && streak % 3 === 0) {
+          time += 2;
+          showBonus(`+2 soniya! ${streak} ketma-ketlik!`);
         }
-      }, { onlyOnce: true });
-
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 3000);
+        
+        newWord();
+      } else {
+        streak = 0;
+        streakBox.textContent = streak;
+        
+        // Error feedback
+        input.classList.add('incorrect');
+        setTimeout(() => input.classList.remove('incorrect'), 500);
+        
+        input.value = "";
+      }
     }
+  });
 
-    // O'yin starti
+  function showBonus(text) {
+    const bonus = document.createElement('div');
+    bonus.textContent = text;
+    bonus.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      z-index: 1000;
+      animation: bonusAnimation 2s ease-out forwards;
+      pointer-events: none;
+      box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+    `;
+    
+    document.body.appendChild(bonus);
+    setTimeout(() => bonus.remove(), 2000);
+  }
+
+  function endGame() {
+    gameActive = false;
+    timer.textContent = "0";
+    input.disabled = true;
+    
+    // Show game over screen
+    document.getElementById("finalScore").textContent = score;
+    document.getElementById("gameOver").style.display = "flex";
+    
+    // Save score to Firebase
+    const userRef = ref(db, "users/" + user.phone);
+    onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data || score > data.score) {
+        set(userRef, {
+          name: user.name,
+          phone: user.phone,
+          score,
+          maxStreak,
+          difficulty,
+          timestamp: Date.now(),
+          wordsUsed: usedWords.size
+        });
+      }
+    }, { onlyOnce: true });
+  }
+
+  function startGame() {
+    gameActive = true;
+    usedWords.clear(); // Reset used words for new game
     newWord();
+    input.disabled = false;
     input.focus();
-    timer.textContent = `⏳ ${time} soniya qoldi`;
+    
     const interval = setInterval(() => {
       time--;
-      timer.textContent = `⏳ ${time} soniya qoldi`;
+      timer.textContent = time;
+      
+      if (time <= 10) {
+        timer.classList.add('warning');
+      }
+      
+      updateProgress();
+      
       if (time <= 0) {
         clearInterval(interval);
         endGame();
       }
     }, 1000);
+  }
 
-    updateScoreboard();
+  window.restartGame = function() {
+    location.reload();
+  }
 
-    // Akkauntni o‘chirish
-    window.deleteAccount = () => {
-      if (confirm("Akkauntingizni o‘chirmoqchimisiz?")) {
-        const userRef = ref(db, "users/" + user.phone);
-        remove(userRef).then(() => {
-          localStorage.removeItem("sozUser");
-          alert("Akkaunt o‘chirildi.");
-          window.location.href = "register.html";
-        });
+  window.deleteAccount = function() {
+    if (confirm("Haqiqatan ham akkauntingizni o'chirmoqchimisiz?")) {
+      const userRef = ref(db, "users/" + user.phone);
+      remove(userRef).then(() => {
+        localStorage.removeItem("sozUser");
+        window.location.href = "register.html";
+      });
+    }
+  }
+
+  // Add bonus animation CSS
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes bonusAnimation {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
       }
-    };
-  </script>
+      20% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+      }
+      80% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Initialize
+  timer.textContent = time;
+  updateScoreboard();
+  
+  // Start game immediately
+  startGame();
+</script>
+
 </body>
 </html>
