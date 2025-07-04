@@ -333,7 +333,7 @@
 
     /* Leaderboard List */
     .leaderboard-list {
-      max-height: 600px;
+      max-height: 400px;
       overflow-y: auto;
       padding-right: 15px;
       position: relative;
@@ -654,6 +654,10 @@
         padding: 15px 25px;
         font-size: 1rem;
       }
+
+      .leaderboard-list {
+        max-height: 350px; /* Mobile uchun ham kamaytirish */
+      }
     }
 
     @media (max-width: 480px) {
@@ -698,6 +702,10 @@
       .stat-card {
         width: 100%;
         max-width: 200px;
+      }
+
+      .leaderboard-list {
+        max-height: 300px; /* Kichik ekranlar uchun */
       }
     }
 
@@ -884,7 +892,6 @@
           <div class="player-info">
             <div class="player-name">${user.name}</div>
             <div class="player-details">
-              <div class="detail-item">📱 ${user.phone}</div>
               <div class="detail-item">🎮 ${getDifficultyText(difficulty)}</div>
               <div class="detail-item">🔥 ${maxStreak} ketma-ketlik</div>
               <div class="detail-item">🎲 ${gamesPlayed} o'yin</div>
